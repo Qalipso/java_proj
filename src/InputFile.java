@@ -2,7 +2,7 @@ package mypack;
 import java.io.*;
 import java.util.ArrayList;
 import mypack.Replace;
-
+import mypack.ChangeStr;
 public class InputFile {
 
     public double coeffa;
@@ -13,7 +13,7 @@ public class InputFile {
     public InputFile(){
         String input;
         forChange = new ArrayList<>();
-        text = new ArrayList<>();
+
         try{
 
             InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream("C:\\Users\\User\\IdeaProjects\\application\\test_replace.txt"));
@@ -36,28 +36,38 @@ public class InputFile {
         }catch (IOException e){
             System.out.println("Ошибка");
         }
+    }
 
+    public mypack.Replace[] getReplace(int baseMinDis,int propMinDis, int modifyU){
+        Replace[] replaceBase = new Replace[forChange.size()];
+        for (int i = 0;i<forChange.size();i++)
+            replaceBase[i] = new Replace(coeffa,coeffb,forChange.get(i),baseMinDis,propMinDis,modifyU);
+        return replaceBase;
+    }
+
+    public ArrayList<String> getText(int modifyE,int modifyU,int modifyZi){
+        text = new ArrayList<>();
         try{
             FileInputStream fstream = new FileInputStream("C:\\Users\\User\\IdeaProjects\\application\\test_text.txt");
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
             String strLine;
+            StringBuilder buildStr = new StringBuilder();
+            ChangeStr tmp = new ChangeStr();
             while ((strLine = br.readLine()) != null){
-                text.add(strLine);
+                buildStr.replace(0,buildStr.length(),"");
+                buildStr.append(tmp.modE(strLine,modifyE));
+                if (modifyU != 0)
+                    buildStr.replace(0,buildStr.toString().length(),tmp.modU(buildStr.toString()));
+                if (modifyZi != 0)
+                    buildStr.replace(0,buildStr.toString().length(),tmp.modZi(buildStr.toString()));
+                text.add(buildStr.toString());
             }
         }catch (IOException e){
             System.out.println("Ошибка");
         }
-
-    }
-    public mypack.Replace[] getReplace(){
-        Replace[] replaceBase = new Replace[forChange.size()];
-        for (int i = 0;i<forChange.size();i++)
-            replaceBase[i] = new Replace(coeffa,coeffb,forChange.get(i));
-        return replaceBase;
-    }
-    public ArrayList<String> getText(){
         return text;
     }
+
     private static InputStream checkForUtf8BOMAndDiscardIfAny(InputStream inputStream) throws IOException {
         PushbackInputStream pushbackInputStream = new PushbackInputStream(new BufferedInputStream(inputStream), 3);
         byte[] bom = new byte[3];
