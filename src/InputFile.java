@@ -36,7 +36,7 @@ public class InputFile {
         }catch (IOException e){
             System.out.println("Ошибка");
         }
-
+        int fl;
         try{
             FileInputStream fstream = new FileInputStream("C:\\Users\\User\\IdeaProjects\\application\\test_text.txt");
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
