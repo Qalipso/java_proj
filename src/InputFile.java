@@ -10,13 +10,13 @@ public class InputFile {
     ArrayList<String> forChange;
     ArrayList<String> text;
 
-    public InputFile(){
+    public InputFile(String patternWay){
         String input;
         forChange = new ArrayList<>();
 
         try{
 
-            InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream("C:\\Users\\Mikhail\\Documents\\GitHub\\java_proj\\test_replace.txt"));
+            InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(patternWay));
             BufferedReader br = new BufferedReader(new InputStreamReader(inpStream));
 
             String strLine;
@@ -45,10 +45,10 @@ public class InputFile {
         return replaceBase;
     }
 
-    public ArrayList<String> getText(int modifyE,int modifyU,int modifyZi){
+    public ArrayList<String> getText(String textWay,int modifyE,int modifyU,int modifyZi){
         text = new ArrayList<>();
         try{
-            FileInputStream fstream = new FileInputStream("C:\\Users\\Mikhail\\Documents\\GitHub\\java_proj\\test_text.txt");
+            FileInputStream fstream = new FileInputStream(textWay);
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
             String strLine;
             StringBuilder buildStr = new StringBuilder();
