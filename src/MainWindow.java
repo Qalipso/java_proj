@@ -2,15 +2,25 @@ package mypack;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
-
+import mypack.ChangeStr;
 import  mypack.Replace;
 import mypack.InputFile;
+import mypack.AhoCorasick;
+import mypack.HundlerWord;
 import javax.swing.*;
+import java.util.Enumeration;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.text.MaskFormatter;
 
 public class MainWindow extends JFrame {
         InputFile data;
         Replace[] replaceBase;
+        ArrayList<String> text;
         private JButton openPatternButton = new JButton("Открыть Базу замен");
         private JButton openTextButton = new JButton("Открыть текст");
         private JButton saveTextButton = new JButton("Сохранить в файл");
@@ -42,57 +52,19 @@ public class MainWindow extends JFrame {
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         openTextButton.setEnabled(false);
         saveTextButton.setEnabled(false);
+        e1radio.setActionCommand("0");
+        e2radio.setActionCommand("1");
+        e3radio.setActionCommand("2");
+        u1radio.setActionCommand("0");
+        u2radio.setActionCommand("1");
+        zi1radio.setActionCommand("0");
+        zi2radio.setActionCommand("1");
+        variant1radio.setActionCommand("0");
+        variant2radio.setActionCommand("1");
+
             //JFileChooser fileChooser = new JFileChooser();
             //addFileChooserListeners();
-            openPatternButton.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            JFileChooser fileopen = new JFileChooser();
-                            int ret = fileopen.showDialog(null, "Открыть файл");
-                            if (ret == JFileChooser.APPROVE_OPTION) {
-                                File file = fileopen.getSelectedFile();
-                                data = new InputFile(file.toPath().toString());
-                                replaceBase =  data.getReplace(0,0,1);
-                                openTextButton.setEnabled(true);
-                                for (int i = 0;i<replaceBase.length;i++)
-                                    System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type + " " + replaceBase[i].coeffOfUsed);
-                                //System.out.println(text);
 
-                                //ahaCorasickText(text.get(0), replaceBase);
-                                //for (int i = 0;i<replaceBase.length;i++)
-                                //System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type + " " + replaceBase[i].coeffOfUsed);
-
-
-
-                            }
-                        }
-                    }
-            );
-            openTextButton.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            JFileChooser fileopen = new JFileChooser();
-                            int ret = fileopen.showDialog(null, "Открыть файл");
-                            if (ret == JFileChooser.APPROVE_OPTION) {
-                                File file = fileopen.getSelectedFile();
-                                ArrayList<String> text;
-                                text = data.getText(file.toPath().toString(), 1, 1, 1);
-                                System.out.println(text);
-                                saveTextButton.setEnabled(true);
-
-                            }
-                        }
-                    });
-            saveTextButton.addActionListener(
-                    new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            System.out.println("22222");
-                        }
-                    }
-            );
             //setLayout(new GridLayout(1,1));
             toolBar.setFloatable(false);
             toolBar.setSize(new Dimension(this.getWidth(),100));
@@ -213,9 +185,144 @@ public class MainWindow extends JFrame {
 //            containerProb.add(probabilityInput);
             //button.addActionListener(new ButtonEventListener());
             //container.add(button);
+        openPatternButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        JFileChooser fileopen = new JFileChooser();
+                        int ret = fileopen.showDialog(null, "Открыть файл");
+                        if (ret == JFileChooser.APPROVE_OPTION) {
+                            File file = fileopen.getSelectedFile();
+                            data = new InputFile(file.toPath().toString());
+                            int baseMinDis;
+                            int probMinDis;
+                            try{
+                                if (baseMinDisInput.getText().equals("") )
+                                    baseMinDis = 0;
+                                else
+                                    baseMinDis = Integer.parseInt(baseMinDisInput.getText());
+                                if (probMinDisInput.getText().equals(""))
+                                    probMinDis = 0;
+                                else
+                                    probMinDis = Integer.parseInt(baseMinDisInput.getText());
+                                replaceBase =  data.getReplace(baseMinDis,probMinDis,Integer.parseInt(groupU.getSelection().getActionCommand()));
+                            }
+                            catch (NumberFormatException ex){
+                                System.out.println("Ошибка ввода значений");
+                            }
 
+                            //System.out.println(baseMinDisInput.getText());
+
+                            openTextButton.setEnabled(true);
+                            for (int i = 0;i<replaceBase.length;i++)
+                                System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type + " " + replaceBase[i].coeffOfUsed);
+                            //System.out.println(text);
+
+
+                        }
+                    }
+                }
+        );
+
+        openTextButton.addActionListener(
+                new ActionListener() {
+                   @Override
+                    public void actionPerformed(ActionEvent e) {
+                        JFileChooser fileopen = new JFileChooser();
+                        int ret = fileopen.showDialog(null, "Открыть файл");
+                        if (ret == JFileChooser.APPROVE_OPTION) {
+                            File file = fileopen.getSelectedFile();
+
+                            text = data.getText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
+                            System.out.println(text);
+
+                            saveTextButton.setEnabled(true);
+                        }
+                    }
+                });
+        saveTextButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        //for (int i = 0;i<data.text.size();i++) {
+                        //    ahaCorasickText(data.text.get(i), replaceBase);
+                        //}
+
+                        for (int i = 0;i<replaceBase.length;i++)
+                        System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type + " " + replaceBase[i].coeffOfUsed);
+                        ChangeStr tmp = new ChangeStr();
+//                        for (int i = 0;i<text.size();i++)
+//                            System.out.println(tmp.getFinStr(text.get(i)));
+//                        JFileChooser fileopen = new JFileChooser();
+//                        int ret = fileopen.showDialog(null, "сохранить файл");
+//                        if (ret == JFileChooser.APPROVE_OPTION) {
+//                            File file = fileopen.getSelectedFile();
+                        JFileChooser fc = new JFileChooser();
+                        if ( fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION ) {
+                            try ( FileWriter fw = new FileWriter(fc.getSelectedFile()) ) {
+                                for (int i = 0;i<text.size();i++)
+                                    fw.write(tmp.getFinStr( ahaCorasickText(data.text.get(i), replaceBase)));
+                                fw.close();
+
+                            }
+                            catch (IOException exe) {
+                                System.out.println("Всё погибло!");
+                            }
+                        }
+//                        try(FileWriter writer = new FileWriter("notes3.txt", false))
+//                        {
+//                            // запись всей строки
+//                            String text = "Hello Gold!";
+//                            writer.write(text);
+//                            // запись по символам
+//                            writer.append('\n');
+//                            writer.append('E');
+//
+//                            writer.flush();
+//                        }
+//                        catch(IOException ex){
+//
+//                            System.out.println(ex.getMessage());
+//                        }
+
+                    }
+                }
+        );
+        }
+    public String getSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                return button.getText();
+            }
         }
 
+        return null;
+    }
+
+    public static String ahaCorasickText(String text, Replace[] replaces) {
+        AhoCorasick ahoCorasick;
+        String[] words = text.split(" ");
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            // Ахо-Карасик
+            ahoCorasick = new AhoCorasick();
+            for (int k = 0; k < replaces.length; k++) {
+                ahoCorasick.addToBohr(replaces[k].replacement);
+            }
+
+            HundlerWord hw = new HundlerWord(words[i]);
+            ahoCorasick.findInd(words[i], hw);
+
+            // Обработка слова
+            System.out.print("-----> " + words[i] + " :");
+            //hw.printIndexes();
+
+           //System.out.println(hw.launch(replaces));
+             res.append(hw.launch(replaces)+" ");
+        }
+        return res.toString();
+    }
         class ButtonEventListener implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 String message = "";

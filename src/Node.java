@@ -1,3 +1,4 @@
+package mypack;
 import java.util.*;
 
 public class Node {

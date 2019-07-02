@@ -20,8 +20,8 @@ public class ChangeStr {
             }
         }
         if (modifyE == 2){
-            tmpStr.append(str.charAt(1));
-            for (int i =2; i<str.length();i++){
+            tmpStr.append(str.charAt(0));
+            for (int i =1; i<str.length();i++){
                 if (str.charAt(i) == 'э'){
                     tmpStr.append("&э");
                 }
@@ -88,11 +88,82 @@ public class ChangeStr {
         tmpStr.append(str.charAt(0));
         for (int i = 1;i<str.length();i++) {
             if ((str.charAt(i-1) == 'ц') && (str.charAt(i) == 'ы'))  {
-                tmpStr.append("&и");
+                tmpStr.append("и");
             }
             else{
+                if ((str.charAt(i-1) == 'ц') && (str.charAt(i) == 'и'))  {
+                    tmpStr.append("&и");
+                }
                 tmpStr.append(str.charAt(i));
             }
+        }
+        return tmpStr.toString();
+    }
+
+    public String getFinStr(String str){
+        StringBuilder tmpStr = new StringBuilder();
+        for (int i = 0;i<str.length();i++){
+            if ((str.charAt(i) == '&')&&(str.charAt(i+1) == 'э')) {
+                tmpStr.append("э");
+                i++;
+                continue;
+            }
+            else {
+                if ((i != 0)&&(str.charAt(i) == 'э')&&(str.charAt(i-1) != '&')) {
+                    tmpStr.append("е");
+                    continue;
+                }
+            }
+            if ((str.charAt(i) == '&')&&(str.charAt(i+1) == 'и')){
+                tmpStr.append("и");
+                i++;
+                continue;
+            }
+            if ((str.charAt(i) == 'ц')&&(str.charAt(i+1) == 'и')){
+                tmpStr.append("цы");
+                i++;
+                continue;
+            }
+//            if ((str.charAt(i) == 'ц')&&(str.charAt(i+1) == 'и')){
+//                tmpStr.append("ы");
+//                i++;
+//                continue;
+//            }
+            if ((str.charAt(i) == 'й')&&(str.charAt(i+1) == 'а')){
+                tmpStr.append("я");
+                i++;
+                continue;
+            }
+            if ((str.charAt(i) == 'й')&&(str.charAt(i+1) == 'у')){
+                tmpStr.append("ю");
+                i++;
+                continue;
+            }
+            if ((str.charAt(i) == 'й')&&(str.charAt(i+1) == 'о')){
+                tmpStr.append("ё");
+                i++;
+                continue;
+            }
+            if ((str.charAt(i) == 'Й')&&(str.charAt(i+1) == 'А')){
+                tmpStr.append("Я");
+                i++;
+                continue;
+            }
+            if ((str.charAt(i) == 'Й')&&(str.charAt(i+1) == 'У')){
+                tmpStr.append("Ю");
+                i++;
+                continue;
+            }
+            if ((str.charAt(i) == 'Й')&&(str.charAt(i+1) == 'О')){
+                tmpStr.append("Ё");
+                i++;
+                continue;
+            }
+            if ((str.charAt(i) == '&') ||(str.charAt(i) == '$')){
+                continue;
+            }
+            tmpStr.append(str.charAt(i));
+
         }
         return tmpStr.toString();
     }

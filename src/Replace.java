@@ -27,6 +27,7 @@ public class Replace {
             coeffOfUsed = (double) Math.round(1/(2*(double)priority)*10000)/10000;
             if ((substr.length > 3)&&(substr[3] != "")){
                 minDis = Math.max((int)Math.round(Integer.parseInt(substr[3]) * minDisCoeff),propMinDis);
+                minDis = Math.max(minDis,baseMinDis);
                 if (substr.length > 4){
                     type = Short.parseShort(substr[4]);
                     if (substr.length > 5){

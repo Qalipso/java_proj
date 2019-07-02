@@ -1,3 +1,4 @@
+package mypack;
 public class MyPair<A, B> {
     private A first;
     private B second;

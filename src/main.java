@@ -6,28 +6,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 public class main {
-    public static void ahaCorasickText(String text, Replace[] replaces) {
-        AhoCorasick ahoCorasick;
-        String[] words = text.split(" ");
 
-        for (int i = 0; i < words.length; i++) {
-            // Ахо-Карасик
-            ahoCorasick = new AhoCorasick();
-            for (int k = 0; k < replaces.length; k++) {
-                ahoCorasick.addToBohr(replaces[k].replacement);
-            }
-
-            HundlerWord hw = new HundlerWord(words[i]);
-            ahoCorasick.findInd(words[i], hw);
-
-            // Обработка слова
-            System.out.print("-----> " + words[i] + " :");
-            hw.printIndexes();
-
-            System.out.println(hw.launch(replaces));
-
-        }
-    }
 
     public static void main(String[] args) {
         MainWindow w = new MainWindow();

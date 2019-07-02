@@ -1,3 +1,4 @@
+package mypack;
 import mypack.Replace;
 
 import java.util.*;
