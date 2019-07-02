@@ -43,9 +43,8 @@ public class Replace {
         }
 
     }
-
     public void incCoeffOfUsed(){
-        coeffOfUsed += 1/priority;
+        coeffOfUsed += 1/(double)priority;
     }
 //    public void setBlock(){
 //        count = minDis;

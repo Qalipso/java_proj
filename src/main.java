@@ -1,6 +1,8 @@
 import mypack.InputFile;
 import mypack.Replace;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class main {
     public static void ahaCorasickText(String text, Replace[] replaces) {
@@ -11,8 +13,6 @@ public class main {
             // Ахо-Карасик
             ahoCorasick = new AhoCorasick();
             for (int k = 0; k < replaces.length; k++) {
-//                if (replaces[k].minDis > 0)replaces[k].minDis--;
-                /*else*/
                 ahoCorasick.addToBohr(replaces[k].replacement);
             }
 
@@ -20,12 +20,10 @@ public class main {
             ahoCorasick.findInd(words[i], hw);
 
             // Обработка слова
-            System.out.println("-----> " + words[i] + " :");
+            System.out.print("-----> " + words[i] + " :");
             hw.printIndexes();
 
-            hw.launch(replaces);
-
-
+            System.out.println(hw.launch(replaces));
         }
 
     }
@@ -37,9 +35,12 @@ public class main {
 
         //System.out.println(data.coeffa+"  "+"  "+data.coeffb);
         for (int i = 0;i<replaceBase.length;i++)
-        System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type);
+            System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type + " " + replaceBase[i].coeffOfUsed);
         System.out.println(text);
 
         ahaCorasickText(text.get(0), replaceBase);
+        for (int i = 0;i<replaceBase.length;i++)
+            System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type + " " + replaceBase[i].coeffOfUsed);
+
     }
 }

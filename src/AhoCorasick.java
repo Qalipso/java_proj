@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AhoCorasick {
@@ -70,7 +71,18 @@ public class AhoCorasick {
     private void check(int vex, int i, HundlerWord hw) {
         for(int t = vex; t != 0; t = getSuffixLink(t)) {
             if(bohr.get(t).flag) {
-                hw.indexes.add( new MyPair<>(i - (patterns.get(bohr.get(t).pattern_index).length() - 1), patterns.get(bohr.get(t).pattern_index) ) );
+//                if (hw.indexes.containsKey(patterns.get(bohr.get(t).pattern_index))) {
+//                    int[] array = hw.indexes.get(patterns.get(bohr.get(t).pattern_index));
+//                    array = Arrays.copyOf(array, array.length + 1);
+//                    array[array.length - 1] = i - (patterns.get(bohr.get(t).pattern_index).length() - 1);
+//
+//                    hw.indexes.put(patterns.get(bohr.get(t).pattern_index), array);
+//                } else {
+//                    int[] array = new int[1];
+//                    array[0] = i - (patterns.get(bohr.get(t).pattern_index).length() - 1);
+//                    hw.indexes.put(patterns.get(bohr.get(t).pattern_index), array);
+//                }
+                hw.entries.add(patterns.get(bohr.get(t).pattern_index));
             }
         }
     }
