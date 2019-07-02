@@ -3,12 +3,10 @@ import java.util.List;
 
 public class AhoCorasick {
 
-    public List<MyPair> answer;
     public List<String> patterns ;
     private List<Node> bohr;
 
     public AhoCorasick() {
-        answer = new ArrayList<>();
         patterns = new ArrayList<>();
         bohr = new ArrayList<>();
         bohr.add(new Node(0,' '));
@@ -43,6 +41,8 @@ public class AhoCorasick {
         if(!bohr.get(vex).move.containsKey(symb)) {
             if(bohr.get(vex).next_vexes.containsKey(symb)) {
                 bohr.get(vex).move.put(symb, bohr.get(vex).next_vexes.get(symb));
+            } else if (bohr.get(vex).next_vexes.containsKey('&') ) {
+                bohr.get(vex).move.put(symb, bohr.get(vex).next_vexes.get('&'));
             } else if(vex == 0) {
                 bohr.get(vex).move.put(symb, 0);
             } else {
@@ -53,18 +53,24 @@ public class AhoCorasick {
         return bohr.get(vex).move.get(symb);
     }
 
-    public void findInd(String text) {
+    public void findInd(String text, HundlerWord hw) {
         int t = 0;
         for(int i = 0; i < text.length(); i++) {
+
             t = this.getMove(t, text.toCharArray()[i]);
-            this.check(t, i);
+            if (text.toCharArray()[i] == '$') {
+                t = 0;
+                continue;
+            }
+
+            this.check(t, i, hw);
         }
     }
 
-    private void check(int vex, int i) {
+    private void check(int vex, int i, HundlerWord hw) {
         for(int t = vex; t != 0; t = getSuffixLink(t)) {
-            if(bohr.get(t).flag == true) {
-                answer.add( new MyPair(i - (patterns.get(bohr.get(t).pattern_index).length() - 1), bohr.get(t).pattern_index ) );
+            if(bohr.get(t).flag) {
+                hw.indexes.add( new MyPair<>(i - (patterns.get(bohr.get(t).pattern_index).length() - 1), patterns.get(bohr.get(t).pattern_index) ) );
             }
         }
     }

@@ -44,11 +44,11 @@ public class ChangeStr {
         StringBuilder tmpStr = new StringBuilder();
             //tmpStr.append(str.charAt(0));
             for (int i = 0;i<str.length();i++){
-                if ((str.charAt(i) == 'й')&&((str.charAt(i+1) == 'а')||(str.charAt(i+1) == 'у')||(str.charAt(i+1) == 'о'))){
+                if (i <str.length()-1 && (str.charAt(i) == 'й')&&((str.charAt(i+1) == 'а')||(str.charAt(i+1) == 'у')||(str.charAt(i+1) == 'о'))){
                     tmpStr.append("й$");
                 }
                 else
-                if ((str.charAt(i) == 'Й')&&((str.charAt(i+1) == 'А')||(str.charAt(i+1) == 'У')||(str.charAt(i+1) == 'О'))){
+                if (i <str.length()-1 && (str.charAt(i) == 'Й')&&((str.charAt(i+1) == 'А')||(str.charAt(i+1) == 'У')||(str.charAt(i+1) == 'О'))){
                     tmpStr.append("Й$");
                 }
                 else

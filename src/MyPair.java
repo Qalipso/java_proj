@@ -1,14 +1,26 @@
-public class MyPair
-{
-    private final int key;
-    private final int value;
+public class MyPair<A, B> {
+    private A first;
+    private B second;
 
-    public MyPair(int aKey, int aValue)
-    {
-        key   = aKey;
-        value = aValue;
+    public MyPair(A first, B second) {
+        super();
+        this.first = first;
+        this.second = second;
     }
 
-    public int key()   { return key; }
-    public int value() { return value; }
+    public A getFirst() {
+        return first;
+    }
+
+    public void setFirst(A first) {
+        this.first = first;
+    }
+
+    public B getSecond() {
+        return second;
+    }
+
+    public void setSecond(B second) {
+        this.second = second;
+    }
 }

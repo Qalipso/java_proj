@@ -16,7 +16,7 @@ public class InputFile {
 
         try{
 
-            InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream("C:\\Users\\User\\IdeaProjects\\application\\test_replace.txt"));
+            InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream("C:\\Users\\Mikhail\\Documents\\GitHub\\java_proj\\test_replace.txt"));
             BufferedReader br = new BufferedReader(new InputStreamReader(inpStream));
 
             String strLine;
@@ -48,7 +48,7 @@ public class InputFile {
     public ArrayList<String> getText(int modifyE,int modifyU,int modifyZi){
         text = new ArrayList<>();
         try{
-            FileInputStream fstream = new FileInputStream("C:\\Users\\User\\IdeaProjects\\application\\test_text.txt");
+            FileInputStream fstream = new FileInputStream("C:\\Users\\Mikhail\\Documents\\GitHub\\java_proj\\test_text.txt");
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
             String strLine;
             StringBuilder buildStr = new StringBuilder();

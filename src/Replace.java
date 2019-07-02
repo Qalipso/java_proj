@@ -24,7 +24,7 @@ public class Replace {
         substitute.add(substr[1]);
         if (substr.length > 2) {
             priority = (int)Math.round(Integer.parseInt(substr[2]) * priorityCoeff);
-            coeffOfUsed = 1/(2*priority);
+            coeffOfUsed = 1/(2*(double)priority);
             if ((substr.length > 3)&&(substr[3] != "")){
                 minDis = Math.max((int)Math.round(Integer.parseInt(substr[3]) * minDisCoeff),propMinDis);
                 if (substr.length > 4){
