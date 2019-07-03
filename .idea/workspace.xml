@@ -13,7 +13,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/InputFile.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="230">
@@ -59,14 +59,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/MainWindow.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="211" column="72" selection-start-line="211" selection-start-column="72" selection-end-line="211" selection-end-column="72" />
+            <state relative-caret-position="371">
+              <caret line="52" column="40" selection-start-line="52" selection-start-column="40" selection-end-line="52" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <marker date="1562183707992" expanded="false" signature="15229:15775" ph="..." />
+                <marker date="1562187173984" expanded="false" signature="16141:16687" ph="..." />
               </folding>
             </state>
           </provider>
@@ -141,12 +141,12 @@
         <option value="$PROJECT_DIR$/src/ChangeStr.java" />
         <option value="$PROJECT_DIR$/src/AhoCorasick.java" />
         <option value="$PROJECT_DIR$/src/Replace.java" />
-        <option value="$PROJECT_DIR$/src/MainWindow.java" />
         <option value="$PROJECT_DIR$/src/InputFile.java" />
+        <option value="$PROJECT_DIR$/src/MainWindow.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="91" />
     <option name="y" value="-14" />
     <option name="width" value="1750" />
@@ -350,23 +350,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/MainWindow.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="211" column="72" selection-start-line="211" selection-start-column="72" selection-end-line="211" selection-end-column="72" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <marker date="1562183707992" expanded="false" signature="15229:15775" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/InputFile.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
           <caret line="50" column="34" lean-forward="true" selection-start-line="50" selection-start-column="34" selection-end-line="50" selection-end-column="34" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/MainWindow.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="371">
+          <caret line="52" column="40" selection-start-line="52" selection-start-column="40" selection-end-line="52" selection-end-column="40" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <marker date="1562187173984" expanded="false" signature="16141:16687" ph="..." />
           </folding>
         </state>
       </provider>

@@ -44,12 +44,13 @@ public class MainWindow extends JFrame {
     private JTextField baseMinDisInput = new JTextField("",5);
     private JTextField probMinDisInput = new JTextField("", 5);
     private JTextField probabilityInput = new JTextField("", 5);
-
+    private JTextArea statistics = new JTextArea(10,30);
 
     public MainWindow() {
             super("Simple Example");
-            this.setBounds(100,100,1000,700);
+            this.setBounds(100,100,850,600);
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            statistics.setEditable(false);
         openTextButton.setEnabled(false);
         saveTextButton.setEnabled(false);
         e1radio.setActionCommand("0");
@@ -67,14 +68,27 @@ public class MainWindow extends JFrame {
 
             //setLayout(new GridLayout(1,1));
             toolBar.setFloatable(false);
-            toolBar.setSize(new Dimension(this.getWidth(),100));
+            toolBar.setSize(new Dimension(this.getWidth()-10,0));
             toolBar.add(openPatternButton);
             toolBar.add(openTextButton);
             toolBar.add(saveTextButton);
-            toolBar.setPreferredSize(new Dimension(this.getWidth(),100));
+            toolBar.setPreferredSize(new Dimension(this.getWidth()-20,50));
             add(toolBar, BorderLayout.NORTH);
             Container container1 = getContentPane();
-            container1.setLayout(new FlowLayout());
+            container1.setLayout(new GridBagLayout());
+        GridBagConstraints c =  new GridBagConstraints();
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill   = GridBagConstraints.NONE;
+        c.gridheight = 1;
+        c.gridwidth  = GridBagConstraints.REMAINDER;
+       // c.gridx = GridBagConstraints.RELATIVE;
+        c.gridx = 0;
+        c.gridy = GridBagConstraints.RELATIVE;
+        c.insets = new Insets(0, 0, 0, 0);
+        c.ipadx = 0;
+        c.ipady = 0;
+        c.weightx = 0.0;
+        c.weighty = 0.0;
             Container container = new Container();
             container.setLayout(new GridLayout(3,3,50,10));
            // setLayout(new GridBagLayout());
@@ -122,9 +136,17 @@ public class MainWindow extends JFrame {
             container.add(panelVariable);
 
 
-            container1.add(toolBar,BorderLayout.NORTH);
-            container1.add(container);
+            container1.add(toolBar,c);
+            container1.add(container,c);
+            //container1.add(statistics);
 
+        Container statisticPanel= new Container();
+        statisticPanel.setLayout(new GridBagLayout());
+
+        statisticPanel.add(new Label("Статистика"),c);
+        statisticPanel.add(statistics,c);
+        statisticPanel.add(new JScrollPane(statistics));
+        container1.add(statisticPanel,c);
 
 //            Container containerE = this.getContentPane();
 //                containerE.setLayout(new GridLayout(2,1));
