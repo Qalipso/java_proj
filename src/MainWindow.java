@@ -135,7 +135,7 @@ public class MainWindow extends JFrame {
                 groupE.add(e3radio);
                 //add(groupE,c);
 //                containerE.add(e1radio);
-                e1radio.setSelected(true);
+                e2radio.setSelected(true);
 //                containerE.add(e2radio);
 //                containerE.add(e3radio);
 
@@ -205,7 +205,21 @@ public class MainWindow extends JFrame {
                                     probMinDis = 0;
                                 else
                                     probMinDis = Integer.parseInt(baseMinDisInput.getText());
-                                replaceBase =  data.getReplace(baseMinDis,probMinDis,Integer.parseInt(groupU.getSelection().getActionCommand()));
+                                try {
+                                    replaceBase = data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()));
+                                }
+                                catch (Throwable ex){
+                                    System.out.println(ex.getMessage()+ " файла "+ file.getName());
+                                }
+                                if (replaceBase != null){
+                                    openTextButton.setEnabled(true);
+                                    for (int i = 0;i<replaceBase.length;i++)
+                                        System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].importance + " " + replaceBase[i].coeffOfUsed);
+
+                                }
+                                else {
+
+                                }
                             }
                             catch (NumberFormatException ex){
                                 System.out.println("Ошибка ввода значений");
@@ -213,10 +227,7 @@ public class MainWindow extends JFrame {
 
                             //System.out.println(baseMinDisInput.getText());
 
-                            openTextButton.setEnabled(true);
-                            for (int i = 0;i<replaceBase.length;i++)
-                                System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type + " " + replaceBase[i].coeffOfUsed);
-                            //System.out.println(text);
+                             //System.out.println(text);
 
 
                         }
@@ -249,7 +260,7 @@ public class MainWindow extends JFrame {
                         //}
 
                         for (int i = 0;i<replaceBase.length;i++)
-                        System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].type + " " + replaceBase[i].coeffOfUsed);
+                        System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].importance + " " + replaceBase[i].coeffOfUsed);
                         ChangeStr tmp = new ChangeStr();
 //                        for (int i = 0;i<text.size();i++)
 //                            System.out.println(tmp.getFinStr(text.get(i)));
@@ -260,9 +271,10 @@ public class MainWindow extends JFrame {
                         JFileChooser fc = new JFileChooser();
                         if ( fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION ) {
                             try ( FileWriter fw = new FileWriter(fc.getSelectedFile()) ) {
-                                for (int i = 0;i<text.size();i++)
-                                    fw.write(tmp.getFinStr( ahaCorasickText(data.text.get(i), replaceBase)));
-                                fw.close();
+                                for (int i = 0;i<text.size();i++) {
+                                    fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase)));
+                                }
+
 
                             }
                             catch (IOException exe) {

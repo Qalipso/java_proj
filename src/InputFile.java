@@ -1,6 +1,8 @@
 package mypack;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
 import mypack.Replace;
 import mypack.ChangeStr;
 public class InputFile {
@@ -13,7 +15,6 @@ public class InputFile {
     public InputFile(String patternWay){
         String input;
         forChange = new ArrayList<>();
-
         try{
 
             InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(patternWay));
@@ -27,22 +28,30 @@ public class InputFile {
                 coeffb = Double.valueOf(tmp[1]);
             }
             catch (java.lang.ArrayIndexOutOfBoundsException e1){
-                System.out.println("Ошибка 1 коэфф");
+                System.out.println("Ошибка, введен 1 коэффициент");
             }
 
             while ((strLine = br.readLine()) != null){
-                forChange.add(strLine);
+                if (strLine.indexOf('*') == -1)
+                    forChange.add(strLine);
             }
         }catch (IOException e){
-            System.out.println("Ошибка");
+            System.out.println("Ошибка ");
         }
     }
 
-    public mypack.Replace[] getReplace(int baseMinDis,int propMinDis, int modifyU){
+    public mypack.Replace[] getReplace(int baseMinDis,int propMinDis, int modifyU) throws Throwable{
         Replace[] replaceBase = new Replace[forChange.size()];
-        for (int i = 0;i<forChange.size();i++)
-            replaceBase[i] = new Replace(coeffa,coeffb,forChange.get(i),baseMinDis,propMinDis,modifyU);
-        return replaceBase;
+        for (int i = 0;i<forChange.size();i++) {
+                replaceBase[i] = new Replace(coeffa, coeffb, forChange.get(i), baseMinDis, propMinDis, modifyU, i);
+                if (replaceBase[i].errors != -1){
+                    Throwable ex = new Exception("Ошибка ввода в строке " + (i+1));
+                    throw ex;
+                    //System.out.print("Ошибка ввода в строке " + i+1);
+                    //return null;
+                }
+        }
+                    return replaceBase;
     }
 
     public ArrayList<String> getText(String textWay,int modifyE,int modifyU,int modifyZi){

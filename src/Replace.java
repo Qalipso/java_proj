@@ -1,4 +1,5 @@
 package mypack;
+import java.text.ParseException;
 import java.util.ArrayList;
 import  java.lang.Math;
 import mypack.ChangeStr;
@@ -8,40 +9,80 @@ public class Replace {
     public ArrayList<String> substitute;
     public int priority;
     public int minDis;
-    public short type;
+    public double importance;
     public double coeffOfUsed;
+    public int errors;
+    public ArrayList<Integer> childs;
 //    int count;
-    public Replace(double priorityCoeff, double minDisCoeff, String str,int baseMinDis, int propMinDis,int modifyU){
+    public Replace(double priorityCoeff, double minDisCoeff, String str,int baseMinDis, int propMinDis,int modifyU, int k){
         substitute = new ArrayList<>();
         ChangeStr tmp = new ChangeStr();
+        StringBuilder buildStr = new StringBuilder();
+        buildStr.append(str);
+        errors = -1;
         //count = 0;
-        String[] substr;
-        substr = str.split(" ");
-        if (modifyU == 1)
-            replacement = tmp.modU(substr[0]);
-        else
-            replacement = substr[0];
-        substitute.add(substr[1]);
-        if (substr.length > 2) {
-            priority = (int)Math.round(Integer.parseInt(substr[2]) * priorityCoeff);
-            coeffOfUsed = (double) Math.round(1/(2*(double)priority)*10000)/10000;
-            if ((substr.length > 3)&&(substr[3] != "")){
-                minDis = Math.max((int)Math.round(Integer.parseInt(substr[3]) * minDisCoeff),propMinDis);
-                minDis = Math.max(minDis,baseMinDis);
-                if (substr.length > 4){
-                    type = Short.parseShort(substr[4]);
-                    if (substr.length > 5){
-                        for (int i = 5;i<substr.length;i++){
-                            substitute.add(substr[i]);
-                        }
-                    }
-
-                }
+        ArrayList<String> substr = new ArrayList<>();
+        try {
+            while ((buildStr.indexOf("\t") != -1)){
+                substr.add(buildStr.substring(0,buildStr.indexOf("\t")));
+                buildStr.delete(0,buildStr.indexOf("\t")+1);
+            }
+            substr.add(buildStr.substring(0,buildStr.length()));
+            while (substr.size() <= 7){
+                substr.add("");
+            }
+           // System.out.println(substr);
+          //  substr = str.split("\t");
+            if (modifyU == 1)
+                replacement = tmp.modU(substr.get(0));
+            else
+                replacement = substr.get(0);
+            substitute.add(substr.get(1));
+            if (!substr.get(2).equals("")) {
+                priority = (int) Math.round(Integer.parseInt(substr.get(2)) * priorityCoeff);
+                coeffOfUsed = (double) Math.round(1 / (2 * (double) priority) * 10000) / 10000;
+            }
+            if (!substr.get(3).equals("")) {
+                minDis = Math.max((int) Math.round(Integer.parseInt(substr.get(3)) * minDisCoeff), propMinDis);
+                minDis = Math.max(minDis, baseMinDis);
+                if (minDis < 0)
+                    throw new ArrayIndexOutOfBoundsException();
             }
             else{
                 minDis = Math.max(baseMinDis,propMinDis);
             }
+                if (!substr.get(4).equals("")) {
+                    if ((Double.valueOf(substr.get(4)) <=2) &&(Double.valueOf(substr.get(4))>=0))
+                        importance = Double.valueOf(substr.get(4));
+                    else
+                        throw new ArrayIndexOutOfBoundsException();
+                }
+                else {
+                    importance = 0;
+                }
+//            System.out.println("!"+substr.get(5)+"!");
+                if (!substr.get(5).equals("")) {
+                    String[] tmpmas;
+                    tmpmas = substr.get(5).split(" ");
+                    for (int i = 0; i < tmpmas.length; i++) {
+                        childs.add(Integer.parseInt(tmpmas[i]));
+                    }
+                }
+                childs = null;
+                if (!substr.get(6).equals("")) {
+                    for (int i = 6; i < substr.size(); i++) {
+                        substitute.add(substr.get(i));
+                    }
+                }
         }
+        catch (ArrayIndexOutOfBoundsException ex){
+            errors = k;
+            //System.out.println("Ошибка в строке " +k);
+        }
+        catch (NumberFormatException exep){
+            errors = k;
+        }
+
 
     }
     public void incCoeffOfUsed(){

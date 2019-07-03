@@ -1,5 +1,6 @@
 package mypack;
 import java.util.ArrayList;
+import mypack.Node;
 import java.util.Arrays;
 import java.util.List;
 
