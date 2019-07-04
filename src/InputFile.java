@@ -1,18 +1,19 @@
 package mypack;
 import java.io.*;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import mypack.Replace;
 import mypack.ChangeStr;
-public class InputFile {
+public class InputFile{
 
     public double coeffa;
     public double coeffb;
     ArrayList<String> forChange;
     ArrayList<String> text;
 
-    public InputFile(String patternWay){
+    public InputFile(String patternWay) throws Throwable{
         String input;
         forChange = new ArrayList<>();
         try{
@@ -24,19 +25,22 @@ public class InputFile {
             strLine = br.readLine();
             String[] tmp = strLine.split(" ");
             try {
-                coeffa = Double.valueOf(tmp[0]);
-                coeffb = Double.valueOf(tmp[1]);
+                coeffa = Double.parseDouble(tmp[0]);
+                coeffb = Double.parseDouble(tmp[1]);
             }
-            catch (java.lang.ArrayIndexOutOfBoundsException e1){
-                System.out.println("Ошибка, введен 1 коэффициент");
+            catch (NumberFormatException e){
+                Throwable ex = new Exception("Ошибка в вводе коэффициентов");
+                throw ex;
+                //System.out.println();
             }
 
             while ((strLine = br.readLine()) != null){
-                if (strLine.indexOf('*') == -1)
+                if ((strLine.indexOf('*') == -1) ||(strLine.indexOf('\n') != 0))
                     forChange.add(strLine);
             }
         }catch (IOException e){
-            System.out.println("Ошибка ");
+            Throwable ex = new Exception("Ошибка считывания файла");
+            throw ex;
         }
     }
 
@@ -54,7 +58,7 @@ public class InputFile {
                     return replaceBase;
     }
 
-    public ArrayList<String> getText(String textWay,int modifyE,int modifyU,int modifyZi){
+    public ArrayList<String> getText(String textWay,int modifyE,int modifyU,int modifyZi) throws Throwable{
         text = new ArrayList<>();
         try{
             FileInputStream fstream = new FileInputStream(textWay);
@@ -72,7 +76,8 @@ public class InputFile {
                 text.add(buildStr.toString());
             }
         }catch (IOException e){
-            System.out.println("Ошибка");
+            Throwable ex = new Exception("Ошибка в считывании файла");
+            throw ex;
         }
         return text;
     }

@@ -6,12 +6,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+
+import com.sun.tools.javac.Main;
 import mypack.ChangeStr;
 import  mypack.Replace;
 import mypack.InputFile;
 import mypack.AhoCorasick;
 import mypack.HundlerWord;
 import javax.swing.*;
+import java.util.Arrays;
 import java.util.Enumeration;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -24,6 +27,10 @@ public class MainWindow extends JFrame {
         private JButton openPatternButton = new JButton("Открыть Базу замен");
         private JButton openTextButton = new JButton("Открыть текст");
         private JButton saveTextButton = new JButton("Сохранить в файл");
+    private JButton openDirButton = new JButton("Открыть директорию");
+    private JButton helpButton = new JButton("О программе");
+    private JButton coeffUsedSortButton = new JButton("Отсортировать по показателю использованности");
+        private JButton countUsedSortButton = new JButton("Отсортировать по кол-ву выполненных замен");
         private  JToolBar toolBar = new JToolBar();
         private JLabel baseMinDisLabel = new JLabel("Введите базовую мин. дистанцию");
         private JLabel probMinDisLabel = new JLabel("Введите допустимую мин. дистанцию");
@@ -48,8 +55,10 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
             super("Simple Example");
-            this.setBounds(100,100,850,600);
+            //System.out.println();
+            this.setBounds(100,100,850,700);
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //fileopen.setCurrentDirectory(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
             statistics.setEditable(false);
         openTextButton.setEnabled(false);
         saveTextButton.setEnabled(false);
@@ -72,6 +81,8 @@ public class MainWindow extends JFrame {
             toolBar.add(openPatternButton);
             toolBar.add(openTextButton);
             toolBar.add(saveTextButton);
+            toolBar.add(openDirButton);
+            toolBar.add(helpButton);
             toolBar.setPreferredSize(new Dimension(this.getWidth()-20,50));
             add(toolBar, BorderLayout.NORTH);
             Container container1 = getContentPane();
@@ -146,6 +157,8 @@ public class MainWindow extends JFrame {
         statisticPanel.add(new Label("Статистика"),c);
         statisticPanel.add(statistics,c);
         statisticPanel.add(new JScrollPane(statistics));
+        statisticPanel.add(coeffUsedSortButton,c);
+        statisticPanel.add(countUsedSortButton,c);
         container1.add(statisticPanel,c);
 
 //            Container containerE = this.getContentPane();
@@ -211,11 +224,20 @@ public class MainWindow extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        JFileChooser fileopen = new JFileChooser();
+                        replaceBase = null;
+                        JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
                         int ret = fileopen.showDialog(null, "Открыть файл");
+                        //fileopen.setCurrentDirectory();
                         if (ret == JFileChooser.APPROVE_OPTION) {
                             File file = fileopen.getSelectedFile();
+                            try{
                             data = new InputFile(file.toPath().toString());
+                            }
+                            catch (Throwable ex){
+                                //System.out.println(ex.getMessage());
+                                JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+
+                            }
                             int baseMinDis;
                             int probMinDis;
                             try{
@@ -231,7 +253,8 @@ public class MainWindow extends JFrame {
                                     replaceBase = data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()));
                                 }
                                 catch (Throwable ex){
-                                    System.out.println(ex.getMessage()+ " файла "+ file.getName());
+                                    //System.out.println();
+                                    JOptionPane.showMessageDialog(null, ex.getMessage()+ " файла "+ file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                 }
                                 if (replaceBase != null){
                                     openTextButton.setEnabled(true);
@@ -239,12 +262,10 @@ public class MainWindow extends JFrame {
                                         System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" "+replaceBase[i].priority+" "+replaceBase[i].minDis+" "+replaceBase[i].importance + " " + replaceBase[i].coeffOfUsed);
 
                                 }
-                                else {
 
-                                }
                             }
                             catch (NumberFormatException ex){
-                                System.out.println("Ошибка ввода значений");
+                                JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                             }
 
                             //System.out.println(baseMinDisInput.getText());
@@ -261,13 +282,19 @@ public class MainWindow extends JFrame {
                 new ActionListener() {
                    @Override
                     public void actionPerformed(ActionEvent e) {
-                        JFileChooser fileopen = new JFileChooser();
+                       text = null;
+                        JFileChooser fileopen =  new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
                         int ret = fileopen.showDialog(null, "Открыть файл");
                         if (ret == JFileChooser.APPROVE_OPTION) {
                             File file = fileopen.getSelectedFile();
-
+                            try{
                             text = data.getText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
-                            System.out.println(text);
+                            }
+                            catch (Throwable ex){
+                                JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+
+                            }
+                            //System.out.println(text);
 
                             saveTextButton.setEnabled(true);
                         }
@@ -290,7 +317,9 @@ public class MainWindow extends JFrame {
 //                        int ret = fileopen.showDialog(null, "сохранить файл");
 //                        if (ret == JFileChooser.APPROVE_OPTION) {
 //                            File file = fileopen.getSelectedFile();
-                        JFileChooser fc = new JFileChooser();
+                        JFileChooser fc =  new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+
+                      //  fc.setCurrentDirectory(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().toString()));
                         if ( fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION ) {
                             try ( FileWriter fw = new FileWriter(fc.getSelectedFile()) ) {
                                 for (int i = 0;i<text.size();i++) {
@@ -300,39 +329,110 @@ public class MainWindow extends JFrame {
 
                             }
                             catch (IOException exe) {
-                                System.out.println("Всё погибло!");
+                                JOptionPane.showMessageDialog(null, "Ошибка в записи файла", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+
+                              //  System.out.println();
                             }
                         }
-//                        try(FileWriter writer = new FileWriter("notes3.txt", false))
-//                        {
-//                            // запись всей строки
-//                            String text = "Hello Gold!";
-//                            writer.write(text);
-//                            // запись по символам
-//                            writer.append('\n');
-//                            writer.append('E');
-//
-//                            writer.flush();
-//                        }
-//                        catch(IOException ex){
-//
-//                            System.out.println(ex.getMessage());
-//                        }
+                    }
+
+                }
+        );
+        openDirButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        replaceBase = null;
+                        boolean errs = false;
+                        int baseMinDis;
+                        int probMinDis;
+                        JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+                        fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        int ret = fileopen.showDialog(null, "Открыть папку с базами замен");
+                        if (ret == JFileChooser.APPROVE_OPTION) {
+                            File folder = fileopen.getSelectedFile();
+                            if (folder.isDirectory()) {
+                                ArrayList<Replace> tmparr = new ArrayList<>();
+                                File[] filesInDir = folder.listFiles();
+                                for (File f : filesInDir) {
+                                    try{
+                                        if (baseMinDisInput.getText().equals("") )
+                                            baseMinDis = 0;
+                                        else
+                                            baseMinDis = Integer.parseInt(baseMinDisInput.getText());
+                                        if (probMinDisInput.getText().equals(""))
+                                            probMinDis = 0;
+                                        else
+                                            probMinDis = Integer.parseInt(baseMinDisInput.getText());
+                                        data = new InputFile(f.toPath().toString());
+                                        try {
+                                            tmparr.addAll(Arrays.asList(data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()))));
+                                        }
+                                        catch (Throwable ex){
+                                           // System.out.println(ex.getMessage()+ " файла "+ f.getName());
+                                            JOptionPane.showMessageDialog(null, ex.getMessage()+ " файла "+ f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+
+                                            errs = true;
+                                        }
+                                    }
+                                    catch (NumberFormatException ex){
+                                        errs =true;
+                                        //System.out.println();
+                                        JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+                                    }
+                                    catch (Throwable exe){
+                                        errs = true;
+                                        //System.out.println(exe.getMessage() + " файла " + f.getName());
+                                        JOptionPane.showMessageDialog(null, exe.getMessage()+ " файла "+ f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+
+                                    }
+
+                                }
+                                if (!errs){
+                                    replaceBase = tmparr.toArray(new Replace[tmparr.size()]);
+                                    openTextButton.setEnabled(true);
+                                    for (int i = 0;i<replaceBase.length;i++)
+                                        System.out.println(replaceBase[i].replacement+" "+replaceBase[i].substitute+" приоритет: "+replaceBase[i].priority+" мин дис: "+replaceBase[i].minDis+" важность: "+replaceBase[i].importance + " " + replaceBase[i].coeffOfUsed);
+
+                                }
+                            }
+                        }
 
                     }
                 }
         );
-        }
-    public String getSelectedButtonText(ButtonGroup buttonGroup) {
-        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
-            AbstractButton button = buttons.nextElement();
-            if (button.isSelected()) {
-                return button.getText();
-            }
-        }
+        helpButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
 
-        return null;
-    }
+                    }
+                }
+        );
+        coeffUsedSortButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        /*
+                        * Вставить сортировку по коэффу использованности
+                        *
+                        * */
+                    }
+                }
+        );
+        countUsedSortButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        /*
+                        *
+                        * Вставить сортировку по количеству вхождений
+                        *
+                        * */
+                    }
+                }
+        );
+        }
 
     public static String ahaCorasickText(String text, Replace[] replaces) {
         AhoCorasick ahoCorasick;
@@ -352,24 +452,9 @@ public class MainWindow extends JFrame {
             System.out.print("-----> " + words[i] + " :");
             //hw.printIndexes();
 
-           //System.out.println(hw.launch(replaces));
-             res.append(hw.launch(replaces)+" ");
+            //System.out.println(hw.launch(replaces));
+            res.append(hw.launch(replaces) + " ");
         }
         return res.toString();
     }
-        class ButtonEventListener implements ActionListener {
-            public void actionPerformed(ActionEvent e) {
-                String message = "";
-                message += "Button was pressed\n";
-                //message += "Text is " + input.getText() + "\n";
-               // message += (radio1.isSelected()?"Radio #1":"Radio #2")
-                        //+ " is selected\n";
-               // message += "CheckBox is " + ((check.isSelected())
-                //        ?"checked":"unchecked");
-                JOptionPane.showMessageDialog(null,
-                        message,
-                        "Output",
-                        JOptionPane.PLAIN_MESSAGE);
-            }
-        }
 }

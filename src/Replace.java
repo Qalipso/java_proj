@@ -11,7 +11,7 @@ public class Replace {
     public int minDis;
     public double importance;
     public double coeffOfUsed;
-    public int errors;
+    public int errors = -1;
     public ArrayList<Integer> childs;
 //    int count;
     public Replace(double priorityCoeff, double minDisCoeff, String str,int baseMinDis, int propMinDis,int modifyU, int k){
@@ -40,7 +40,7 @@ public class Replace {
             substitute.add(substr.get(1));
             if (!substr.get(2).equals("")) {
                 priority = (int) Math.round(Integer.parseInt(substr.get(2)) * priorityCoeff);
-                coeffOfUsed = (double) Math.round(1 / (2 * (double) priority) * 10000) / 10000;
+                coeffOfUsed = Math.round(1 / (2 * (double) priority)) ;
             }
             if (!substr.get(3).equals("")) {
                 minDis = Math.max((int) Math.round(Integer.parseInt(substr.get(3)) * minDisCoeff), propMinDis);
@@ -63,14 +63,21 @@ public class Replace {
 //            System.out.println("!"+substr.get(5)+"!");
                 if (!substr.get(5).equals("")) {
                     String[] tmpmas;
-                    tmpmas = substr.get(5).split(" ");
-                    for (int i = 0; i < tmpmas.length; i++) {
-                        childs.add(Integer.parseInt(tmpmas[i]));
+                    if (substr.get(5).length() != 1) {
+                        tmpmas = substr.get(5).split(" ");
+                        for (int i = 0; i < tmpmas.length; i++) {
+                            //childs.add(Integer.parseInt(tmpmas[i]));
+                        }
+                    }
+                    else {
+                        childs = null;
+                        //childs.add(Integer.parseInt(substr.get(5)));
                     }
                 }
-                childs = null;
+
                 if (!substr.get(6).equals("")) {
                     for (int i = 6; i < substr.size(); i++) {
+                        if (!substr.get(i).equals(""))
                         substitute.add(substr.get(i));
                     }
                 }
@@ -82,9 +89,9 @@ public class Replace {
         catch (NumberFormatException exep){
             errors = k;
         }
-
-
     }
+
+
     public void incCoeffOfUsed(){
         coeffOfUsed += 1/(double)priority;
     }
