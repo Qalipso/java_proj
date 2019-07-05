@@ -323,7 +323,8 @@ public class MainWindow extends JFrame {
                         if ( fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION ) {
                             try ( FileWriter fw = new FileWriter(fc.getSelectedFile()) ) {
                                 for (int i = 0;i<text.size();i++) {
-                                    fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase)));
+                                    fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, Integer.parseInt(groupVar.getSelection().getActionCommand()))));
+
                                 }
 
 
@@ -413,10 +414,7 @@ public class MainWindow extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        /*
-                        * Вставить сортировку по коэффу использованности
-                        *
-                        * */
+                        Arrays.sort(replaceBase,(o1, o2)-> compareCoef(o1,o2));
                     }
                 }
         );
@@ -424,19 +422,16 @@ public class MainWindow extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        /*
-                        *
-                        * Вставить сортировку по количеству вхождений
-                        *
-                        * */
+                        Arrays.sort(replaceBase,(o1, o2)-> compareCount(o1,o2));
                     }
                 }
         );
         }
 
-    public static String ahaCorasickText(String text, Replace[] replaces) {
+    public static String ahaCorasickText(String text, Replace[] replaces, int mark) {
         AhoCorasick ahoCorasick;
         String[] words = text.split(" ");
+        if (!Character.isLetter(words[0].charAt(0)))words[0] = words[0].substring(1);
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < words.length; i++) {
             // Ахо-Карасик
@@ -445,16 +440,41 @@ public class MainWindow extends JFrame {
                 ahoCorasick.addToBohr(replaces[k].replacement);
             }
 
-            HundlerWord hw = new HundlerWord(words[i]);
+            HundlerWord hw = new HundlerWord(words[i], mark);
             ahoCorasick.findInd(words[i], hw);
 
             // Обработка слова
             System.out.print("-----> " + words[i] + " :");
             //hw.printIndexes();
 
-            //System.out.println(hw.launch(replaces));
+            System.out.println(hw.launch(replaces));
             res.append(hw.launch(replaces) + " ");
         }
+        for (int i = 0;i<replaces.length;i++)
+            System.out.println(replaces[i].replacement+" "+replaces[i].substitute+" "+replaces[i].priority+" "+replaces[i].minDis+" "+replaces[i].importance + " " + replaces[i].coeffOfUsed + " " + replaces[i].countGood + " " + replaces[i].countBad + " " + replaces[i].countFake);
+
         return res.toString();
+    }
+
+    public static int compareCoef(Replace o1, Replace o2) {
+        if (Math.abs(o2.coeffOfUsed - o1.coeffOfUsed) < 0.00001){
+            return 0;
+        }
+        else {
+            if (o1.coeffOfUsed < o2.coeffOfUsed) return -1;
+            else return 1;
+        }
+    }
+
+    public static int compareCount(Replace o1, Replace o2) {
+        return ( (o1.countGood == o2.countGood) ?
+
+                ( (o1.countBad == o2.countBad) ?
+
+                        ((o1.countFake == o2.countFake) ? 0 : (o1.countFake - o2.countFake) )
+
+                        : (o2.countBad - o1.countBad) )
+
+                : (o1.countGood - o2.countGood) );
     }
 }

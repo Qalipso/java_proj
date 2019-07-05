@@ -56,7 +56,7 @@ public class AhoCorasick {
         return bohr.get(vex).move.get(symb);
     }
 
-    public void findInd(String text, HundlerWord hw) {
+    public void findInd(String text, mypack.HundlerWord hw) {
         int t = 0;
         for(int i = 0; i < text.length(); i++) {
 
@@ -70,21 +70,19 @@ public class AhoCorasick {
         }
     }
 
-    private void check(int vex, int i, HundlerWord hw) {
+    private void check(int vex, int i, mypack.HundlerWord hw) {
         for(int t = vex; t != 0; t = getSuffixLink(t)) {
             if(bohr.get(t).flag) {
-//                if (hw.indexes.containsKey(patterns.get(bohr.get(t).pattern_index))) {
-//                    int[] array = hw.indexes.get(patterns.get(bohr.get(t).pattern_index));
-//                    array = Arrays.copyOf(array, array.length + 1);
-//                    array[array.length - 1] = i - (patterns.get(bohr.get(t).pattern_index).length() - 1);
-//
-//                    hw.indexes.put(patterns.get(bohr.get(t).pattern_index), array);
-//                } else {
-//                    int[] array = new int[1];
-//                    array[0] = i - (patterns.get(bohr.get(t).pattern_index).length() - 1);
-//                    hw.indexes.put(patterns.get(bohr.get(t).pattern_index), array);
-//                }
-                hw.entries.add(patterns.get(bohr.get(t).pattern_index));
+                int index = i - (patterns.get(bohr.get(t).pattern_index).length() - 1);
+
+                if (hw.indexes.containsKey(patterns.get(bohr.get(t).pattern_index))) {
+                    hw.indexes.get(patterns.get(bohr.get(t).pattern_index)).add(index);
+
+                } else {
+                    List<Integer> r = new ArrayList<>();
+                    r.add(index);
+                    hw.indexes.put(patterns.get(bohr.get(t).pattern_index), r);
+                }
             }
         }
     }

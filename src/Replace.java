@@ -2,6 +2,8 @@ package mypack;
 import java.text.ParseException;
 import java.util.ArrayList;
 import  java.lang.Math;
+import java.util.List;
+
 import mypack.ChangeStr;
 
 public class Replace {
@@ -12,9 +14,16 @@ public class Replace {
     public double importance;
     public double coeffOfUsed;
     public int errors = -1;
+
+    public int countBlock;
+    public int countGood;
+    public int countBad;
+    public int countFake;
+    public List<String> group;
     public ArrayList<Integer> childs;
 //    int count;
     public Replace(double priorityCoeff, double minDisCoeff, String str,int baseMinDis, int propMinDis,int modifyU, int k){
+
         substitute = new ArrayList<>();
         ChangeStr tmp = new ChangeStr();
         StringBuilder buildStr = new StringBuilder();
@@ -40,7 +49,7 @@ public class Replace {
             substitute.add(substr.get(1));
             if (!substr.get(2).equals("")) {
                 priority = (int) Math.round(Integer.parseInt(substr.get(2)) * priorityCoeff);
-                coeffOfUsed = Math.round(1 / (2 * (double) priority)) ;
+                coeffOfUsed = 1 / (2 * (double) priority) ;
             }
             if (!substr.get(3).equals("")) {
                 minDis = Math.max((int) Math.round(Integer.parseInt(substr.get(3)) * minDisCoeff), propMinDis);
@@ -51,6 +60,7 @@ public class Replace {
             else{
                 minDis = Math.max(baseMinDis,propMinDis);
             }
+            countBlock = minDis;
                 if (!substr.get(4).equals("")) {
                     if ((Double.valueOf(substr.get(4)) <=2) &&(Double.valueOf(substr.get(4))>=0))
                         importance = Double.valueOf(substr.get(4));
@@ -95,17 +105,10 @@ public class Replace {
     public void incCoeffOfUsed(){
         coeffOfUsed += 1/(double)priority;
     }
-//    public void setBlock(){
-//        count = minDis;
-//    }
-//    public boolean decCounter(){
-//        count--;
-//        if (count <= 0) {
-//            count = 0;
-//            return true;
-//        }
-//        else{
-//            return false;
-//        }
-//    }
+
+    public void incCountGood(int x) { countGood += x; }
+
+    public void incCountBad(int x) { countBad += x; }
+
+    public void incCountFake(int x) { countFake += x; }
 }
