@@ -58,6 +58,8 @@ public class MainWindow extends JFrame {
             //System.out.println();
             this.setBounds(100,100,850,700);
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            countUsedSortButton.setEnabled(false);
+            coeffUsedSortButton.setEnabled(false);
         //fileopen.setCurrentDirectory(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
             statistics.setEditable(false);
         openTextButton.setEnabled(false);
@@ -326,7 +328,8 @@ public class MainWindow extends JFrame {
                                     fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, Integer.parseInt(groupVar.getSelection().getActionCommand()))));
 
                                 }
-
+                                countUsedSortButton.setEnabled(true);
+                                coeffUsedSortButton.setEnabled(true);
 
                             }
                             catch (IOException exe) {
@@ -406,7 +409,8 @@ public class MainWindow extends JFrame {
                 new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-
+                        mypack.Help w = new mypack.Help();
+                        w.setVisible(true);
                     }
                 }
         );
@@ -415,6 +419,12 @@ public class MainWindow extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Arrays.sort(replaceBase,(o1, o2)-> compareCoef(o1,o2));
+                        StringBuilder tmpStr = new StringBuilder();
+                        for (int i= 0;i <replaceBase.length;i++) {
+                                tmpStr.append(replaceBase[i].replacement+ " "+ replaceBase[i].substitute+ " коэфф. исп." + replaceBase[i].coeffOfUsed+ "\n");
+                        }
+                        statistics.setText(tmpStr.toString());
+
                     }
                 }
         );
@@ -423,6 +433,11 @@ public class MainWindow extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Arrays.sort(replaceBase,(o1, o2)-> compareCount(o1,o2));
+                        StringBuilder tmpStr = new StringBuilder();
+                        for (int i= 0;i <replaceBase.length;i++) {
+                            tmpStr.append(replaceBase[i].replacement+ " "+ replaceBase[i].substitute+ " успешных замен:" + replaceBase[i].countGood + " несостоявшихся замен:"+ replaceBase[i].countBad+" "+ "\n");
+                        }
+                        statistics.setText(tmpStr.toString());
                     }
                 }
         );
