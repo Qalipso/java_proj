@@ -124,11 +124,6 @@ public class ChangeStr {
                 i++;
                 continue;
             }
-//            if ((str.charAt(i) == 'ц')&&(str.charAt(i+1) == 'и')){
-//                tmpStr.append("ы");
-//                i++;
-//                continue;
-//            }
             if ((str.charAt(i) == 'й')&&(str.charAt(i+1) == 'а')){
                 tmpStr.append("я");
                 i++;
