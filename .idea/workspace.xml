@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cb508162-aa40-4b76-99fa-fa1cb73c6360" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ChangeStr.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ChangeStr.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HundlerWord.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HundlerWord.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/InputFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/InputFile.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MainWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MainWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Replace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Replace.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -77,8 +72,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/MainWindow.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="129">
-              <caret line="444" column="20" selection-start-line="444" selection-start-column="20" selection-end-line="444" selection-end-column="20" />
+            <state relative-caret-position="398">
+              <caret line="432" column="34" selection-start-line="432" selection-start-column="34" selection-end-line="432" selection-end-column="34" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -278,13 +273,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/MainWindow.java</url>
-          <line>254</line>
+          <line>268</line>
           <properties />
           <option name="timeStamp" value="34" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/MainWindow.java</url>
-          <line>258</line>
+          <line>272</line>
           <properties />
           <option name="timeStamp" value="35" />
         </line-breakpoint>
@@ -401,8 +396,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/MainWindow.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="129">
-          <caret line="444" column="20" selection-start-line="444" selection-start-column="20" selection-end-line="444" selection-end-column="20" />
+        <state relative-caret-position="398">
+          <caret line="432" column="34" selection-start-line="432" selection-start-column="34" selection-end-line="432" selection-end-column="34" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

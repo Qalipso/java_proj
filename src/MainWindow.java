@@ -2,6 +2,7 @@ package mypack;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.DataInput;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class MainWindow extends JFrame {
     private JButton optionsButton = new JButton("Открыть options");
     private JButton coeffUsedSortButton = new JButton("Отсортировать по показателю использованности");
     private JButton countUsedSortButton = new JButton("Отсортировать по кол-ву выполненных замен");
+    private JButton groupSortButton = new JButton("Отсортировать по группам");
     private JToolBar toolBar = new JToolBar();
     private JLabel baseMinDisLabel = new JLabel("Введите базовую мин. дистанцию");
     private JLabel probMinDisLabel = new JLabel("Введите допустимую мин. дистанцию");
@@ -60,15 +62,18 @@ public class MainWindow extends JFrame {
     private JTextField baseMinDisInput = new JTextField("", 5);
     private JTextField probMinDisInput = new JTextField("", 5);
     private JTextField probabilityInput = new JTextField("", 5);
-    private JTextArea statistics = new JTextArea(10, 30);
+    private JTextArea statistics = new JTextArea(20, 50);
 
     public MainWindow() {
         super("Simple Example");
         //System.out.println();
-        this.setBounds(100, 100, 950, 580);
+        this.setBounds(100, 100, 950, 850);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         countUsedSortButton.setEnabled(false);
         coeffUsedSortButton.setEnabled(false);
+        groupSortButton.setEnabled(false);
+        coeffUsedSortButton.setMaximumSize(new Dimension(100,100));
+        countUsedSortButton.setMaximumSize(new Dimension(100,100));
 
         statistics.setEditable(false);
         openTextButton.setEnabled(false);
@@ -96,17 +101,17 @@ public class MainWindow extends JFrame {
         container1.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.CENTER;
-        c.fill = GridBagConstraints.NONE;
+        c.fill = GridBagConstraints.BOTH;
         c.gridheight = 1;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        c.gridx = GridBagConstraints.RELATIVE;
+       // c.gridx = GridBagConstraints.RELATIVE;
         c.gridx = 0;
         c.gridy = GridBagConstraints.RELATIVE;
         c.insets = new Insets(0, 0, 0, 0);
-        c.ipadx = 0;
-        c.ipady = 0;
-        c.weightx = 0.0;
-        c.weighty = 0.0;
+        c.ipadx = 1;
+        c.ipady = 1;
+        c.weightx = 0.1;
+        c.weighty = 0.1;
         Container container = new Container();
         container.setLayout(new GridLayout(3, 5, 50, 10));
 
@@ -115,52 +120,52 @@ public class MainWindow extends JFrame {
         probabilityInput.setPreferredSize(new Dimension(80, 10));
         randMinDisInput.setPreferredSize(new Dimension(80, 10));
         JPanel panelE = new JPanel(new GridLayout(4, 1));
-        panelE.setPreferredSize(new Dimension(150, 50));
+        //panelE.setPreferredSize(new Dimension(150, 50));
         panelE.add(modifyELabel);
         panelE.add(e1radio);
         panelE.add(e2radio);
         panelE.add(e3radio);
 
         JPanel panelU = new JPanel(new GridLayout(3, 1));
-        panelU.setPreferredSize(new Dimension(200, 100));
+        //panelU.setPreferredSize(new Dimension(200, 100));
         panelU.add(modifyULabel);
         panelU.add(u1radio);
         panelU.add(u2radio);
 
         JPanel panelZi = new JPanel(new GridLayout(3, 1));
-        panelZi.setPreferredSize(new Dimension(150, 50));
+        //panelZi.setPreferredSize(new Dimension(150, 50));
         panelZi.add(modifyZiLabel);
         panelZi.add(zi1radio);
         panelZi.add(zi2radio);
 
         JPanel panelVariable = new JPanel(new GridLayout(3, 1));
-        panelVariable.setPreferredSize(new Dimension(150, 50));
+        //panelVariable.setPreferredSize(new Dimension(150, 50));
         panelVariable.add(variantLabel);
         panelVariable.add(variant1radio);
         panelVariable.add(variant2radio);
 
         JPanel panelBaseMin = new JPanel(new GridLayout(2, 1));
-        panelBaseMin.setPreferredSize(new Dimension(150, 50));
+       // panelBaseMin.setPreferredSize(new Dimension(150, 50));
         panelBaseMin.add(baseMinDisLabel);
         panelBaseMin.add(baseMinDisInput);
 
         JPanel panelProbMin = new JPanel(new GridLayout(2, 1));
-        panelProbMin.setPreferredSize(new Dimension(150, 50));
+        //panelProbMin.setPreferredSize(new Dimension(150, 50));
         panelProbMin.add(probMinDisLabel);
         panelProbMin.add(probMinDisInput);
 
         JPanel panelProb = new JPanel(new GridLayout(2, 1));
-        panelProb.setPreferredSize(new Dimension(150, 50));
+        //panelProb.setPreferredSize(new Dimension(150, 50));
         panelProb.add(probabilityLabel);
         panelProb.add(probabilityInput);
 
         JPanel panelRandUsed = new JPanel(new GridLayout(2, 1));
-        panelRandUsed.setPreferredSize(new Dimension(150, 50));
+        //panelRandUsed.setPreferredSize(new Dimension(150, 50));
         panelRandUsed.add(randUsedLabel);
         panelRandUsed.add(randUsedInput);
 
         JPanel panelRandMinDis = new JPanel(new GridLayout(2, 1));
-        panelRandMinDis.setPreferredSize(new Dimension(150, 50));
+        //panelRandMinDis.setPreferredSize(new Dimension(150, 50));
         panelRandMinDis.add(randMinDisLabel);
         panelRandMinDis.add(randMinDisInput);
 
@@ -179,11 +184,20 @@ public class MainWindow extends JFrame {
         Container statisticPanel = new Container();
         statisticPanel.setLayout(new GridBagLayout());
 
+
+        //statisticPanel.setPreferredSize(new Dimension(this.getWidth()-40,500));
+        c.weightx = 0.1;
+        c.weighty = 0.1;
+        c.anchor = GridBagConstraints.CENTER;
         statisticPanel.add(new Label("Статистика"), c);
+        c.gridheight = 2;
         statisticPanel.add(statistics, c);
+        c.gridheight = 1;
+        //statistics.setPreferredSize(new Dimension(this.getWidth()-40,500));
         statisticPanel.add(new JScrollPane(statistics));
         statisticPanel.add(coeffUsedSortButton, c);
         statisticPanel.add(countUsedSortButton, c);
+        statisticPanel.add(groupSortButton,c);
         container1.add(statisticPanel, c);
 
         ButtonGroup groupE = new ButtonGroup();
@@ -291,11 +305,13 @@ public class MainWindow extends JFrame {
                     JFileChooser fc = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
                     if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
                         try (FileWriter fw = new FileWriter(fc.getSelectedFile())) {
+                            System.out.println(text);
                             for (int i = 0; i < text.size(); i++) {
                                 fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, Integer.parseInt(groupVar.getSelection().getActionCommand())),Integer.parseInt(groupU.getSelection().getActionCommand()))+ System.lineSeparator());
                             }
                             countUsedSortButton.setEnabled(true);
                             coeffUsedSortButton.setEnabled(true);
+                            groupSortButton.setEnabled(true);
                         } catch (IOException exe) {
                             JOptionPane.showMessageDialog(null, "Ошибка в записи файла", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                         }
@@ -411,6 +427,12 @@ public class MainWindow extends JFrame {
                  */
             }
         });
+
+        groupSortButton.addActionListener((e) ->{
+            /*
+            Сортировка по группам.
+             */
+        });
     }
 
     public static String ahaCorasickText(String text, Replace[] replaces, int mark) {
@@ -421,7 +443,6 @@ public class MainWindow extends JFrame {
         for (int i = 0; i < words.length; i++) {
             // Ахо-Карасик
             ahoCorasick = new AhoCorasick();
-            System.out.println(replaces);
             for (int k = 0; k < replaces.length; k++) {
                 ahoCorasick.addToBohr(replaces[k].replacement);
             }
