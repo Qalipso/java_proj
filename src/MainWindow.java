@@ -84,7 +84,6 @@ public class MainWindow extends JFrame {
         variant2radio.setActionCommand("1");
 
         toolBar.setFloatable(false);
-        toolBar.setSize(new Dimension(this.getWidth() - 10, 0));
         toolBar.add(openPatternButton);
         toolBar.add(openDirButton);
         toolBar.add(openTextButton);
@@ -116,50 +115,52 @@ public class MainWindow extends JFrame {
         probabilityInput.setPreferredSize(new Dimension(80, 10));
         randMinDisInput.setPreferredSize(new Dimension(80, 10));
         JPanel panelE = new JPanel(new GridLayout(4, 1));
-        panelE.setPreferredSize(new Dimension(80, 40));
+        panelE.setPreferredSize(new Dimension(150, 50));
         panelE.add(modifyELabel);
         panelE.add(e1radio);
         panelE.add(e2radio);
         panelE.add(e3radio);
 
         JPanel panelU = new JPanel(new GridLayout(3, 1));
+        panelU.setPreferredSize(new Dimension(200, 100));
         panelU.add(modifyULabel);
         panelU.add(u1radio);
         panelU.add(u2radio);
 
         JPanel panelZi = new JPanel(new GridLayout(3, 1));
+        panelZi.setPreferredSize(new Dimension(150, 50));
         panelZi.add(modifyZiLabel);
         panelZi.add(zi1radio);
         panelZi.add(zi2radio);
 
         JPanel panelVariable = new JPanel(new GridLayout(3, 1));
-        panelVariable.setPreferredSize(new Dimension(80, 40));
+        panelVariable.setPreferredSize(new Dimension(150, 50));
         panelVariable.add(variantLabel);
         panelVariable.add(variant1radio);
         panelVariable.add(variant2radio);
 
         JPanel panelBaseMin = new JPanel(new GridLayout(2, 1));
-        panelBaseMin.setPreferredSize(new Dimension(80, 40));
+        panelBaseMin.setPreferredSize(new Dimension(150, 50));
         panelBaseMin.add(baseMinDisLabel);
         panelBaseMin.add(baseMinDisInput);
 
         JPanel panelProbMin = new JPanel(new GridLayout(2, 1));
-        panelProbMin.setPreferredSize(new Dimension(80, 40));
+        panelProbMin.setPreferredSize(new Dimension(150, 50));
         panelProbMin.add(probMinDisLabel);
         panelProbMin.add(probMinDisInput);
 
         JPanel panelProb = new JPanel(new GridLayout(2, 1));
-        panelProb.setPreferredSize(new Dimension(80, 40));
+        panelProb.setPreferredSize(new Dimension(150, 50));
         panelProb.add(probabilityLabel);
         panelProb.add(probabilityInput);
 
         JPanel panelRandUsed = new JPanel(new GridLayout(2, 1));
-        panelRandUsed.setPreferredSize(new Dimension(80, 40));
+        panelRandUsed.setPreferredSize(new Dimension(150, 50));
         panelRandUsed.add(randUsedLabel);
         panelRandUsed.add(randUsedInput);
 
         JPanel panelRandMinDis = new JPanel(new GridLayout(2, 1));
-        panelRandMinDis.setPreferredSize(new Dimension(80, 40));
+        panelRandMinDis.setPreferredSize(new Dimension(150, 50));
         panelRandMinDis.add(randMinDisLabel);
         panelRandMinDis.add(randMinDisInput);
 
@@ -174,7 +175,7 @@ public class MainWindow extends JFrame {
         container.add(panelVariable);
 
         container1.add(container, c);
-        container1.setPreferredSize(new Dimension(500, 500));
+        //container1.setPreferredSize(new Dimension(500, 500));
         Container statisticPanel = new Container();
         statisticPanel.setLayout(new GridBagLayout());
 
@@ -281,6 +282,7 @@ public class MainWindow extends JFrame {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                 }
                 saveTextButton.setEnabled(true);
+                System.out.println(text);
             }
         });
 
@@ -290,7 +292,7 @@ public class MainWindow extends JFrame {
                     if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
                         try (FileWriter fw = new FileWriter(fc.getSelectedFile())) {
                             for (int i = 0; i < text.size(); i++) {
-                                fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, Integer.parseInt(groupVar.getSelection().getActionCommand()))));
+                                fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, Integer.parseInt(groupVar.getSelection().getActionCommand())),Integer.parseInt(groupU.getSelection().getActionCommand()))+ System.lineSeparator());
                             }
                             countUsedSortButton.setEnabled(true);
                             coeffUsedSortButton.setEnabled(true);
@@ -424,18 +426,18 @@ public class MainWindow extends JFrame {
                 ahoCorasick.addToBohr(replaces[k].replacement);
             }
 
-            HundlerWord hw = new HundlerWord(words[i],replaces, mark);
+            HundlerWord hw = new HundlerWord(words[i], replaces, mark);
             ahoCorasick.findInd(words[i], hw);
 
             // Обработка слова
-            System.out.print("-----> " + words[i] + " :");
+            //System.out.print("-----> " + words[i] + " :");
             //hw.printIndexes();
 
-            System.out.println(hw.launch());
+          //  System.out.println(hw.launch(replaces));
             res.append(hw.launch() + " ");
         }
-        for (int i = 0; i < replaces.length; i++)
-            System.out.println(replaces[i].replacement + " " + replaces[i].substitute + " " + replaces[i].priority + " " + replaces[i].minDis + " " + replaces[i].importance + " " + replaces[i].coeffOfUsed + " " + replaces[i].countGood + " " + replaces[i].countBad + " " + replaces[i].countFake);
+//        for (int i = 0; i < replaces.length; i++)
+//            System.out.println(replaces[i].replacement + " " + replaces[i].substitute + " " + replaces[i].priority + " " + replaces[i].minDis + " " + replaces[i].importance + " " + replaces[i].coeffOfUsed + " " + replaces[i].countGood + " " + replaces[i].countBad + " " + replaces[i].countFake);
 
         return res.toString();
     }

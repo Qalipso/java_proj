@@ -247,7 +247,7 @@ public class HundlerWord {
             }
         }
 
-        return q/*.replaceAll("[&$]", "")*/;
+        return q /*.replaceAll("[&$]", "")*/;
     }
 
 

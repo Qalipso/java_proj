@@ -34,7 +34,7 @@ public class Replace {
 
     public int group;
     public ArrayList<Integer> childs; /* используется только для заполнения childStr*/
-    public ArrayList<String> childsStr;
+    public ArrayList<Replace> childsStr;
 
     public Replace(double priorityCoeff, double minDisCoeff, String str, int baseMinDis, int propMinDis, int modifyU, int k, double probability, double randmindis, double randUsed, int group_) {
         chanceBlock = probability;

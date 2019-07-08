@@ -68,14 +68,12 @@ public class InputFile {
                 }
             }
         }
-        String str;
         for (int i = 0; i < replaceBase.size(); i++) {
             if (replaceBase.get(i).childs != null)
                 for (int k = 0; k < replaceBase.get(i).childs.size(); k++) {
                     try {
                         if ((replaceBase.get(i).childs.get(k) < replaceBase.size()) && (replaceBase.get(i).childs.get(k) != null)) {
-                            str = replaceBase.get(replaceBase.get(i).childs.get(k) + masgroup[replaceBase.get(i).group]).replacement;
-                            replaceBase.get(i).childsStr.add(str);
+                            replaceBase.get(i).childsStr.add(replaceBase.get(replaceBase.get(i).childs.get(k) + masgroup[replaceBase.get(i).group]));
                         }
                     } catch (Exception exe) {
                         Throwable ee = new Exception("Ошибка ввода в строке " + (i + 1));
