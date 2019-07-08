@@ -3,6 +3,8 @@ package mypack;
 import java.util.ArrayList;
 import java.lang.Math;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import mypack.ChangeStr;
 
@@ -11,24 +13,33 @@ public class Replace {
     public ArrayList<String> substitute;
     public int priority;
     public int minDis;
+
     public double importance;
     public double chanceBlock;
-    public double coeffOfRan;
-    public double randMinDis;
+
     public double coeffOfUsed;
-    public int errors = -1;
+    public double coeffOfUsedRan;
+    public double coeffOfRan;
+
+    public double coeffOfRandMinDis;
+    public int minDisRan;
+
     public int countBlock;
     public int countGood;
     public int countBad;
     public int countFake;
+
+    public int errors = -1;
+    public boolean hundlered = false;
+
     public int group;
-    public ArrayList<Integer> childs;
+    public ArrayList<Integer> childs; /* используется только для заполнения childStr*/
     public ArrayList<String> childsStr;
 
     public Replace(double priorityCoeff, double minDisCoeff, String str, int baseMinDis, int propMinDis, int modifyU, int k, double probability, double randmindis, double randUsed, int group_) {
         chanceBlock = probability;
         coeffOfRan = randUsed;
-        randMinDis = randmindis;
+        coeffOfRandMinDis = randmindis;
         group = group_;
         childsStr = new ArrayList<>();
         substitute = new ArrayList<>();
@@ -60,6 +71,11 @@ public class Replace {
                 if (!substr.get(2).equals("")) {
                     priority = (int) Math.round(Integer.parseInt(substr.get(2)) * priorityCoeff);
                     coeffOfUsed = 1 / (2 * (double) priority);
+
+                    Random rand = new Random();
+                    rand.setSeed(System.nanoTime());
+                    double ranNumber = (rand.nextDouble() * coeffOfRan * 2) - coeffOfRan;
+                    coeffOfUsedRan = coeffOfUsed + (1/(double)priority) * ranNumber;
                 }
                 if (!substr.get(3).equals("")) {
                     minDis = Math.max((int) Math.round(Integer.parseInt(substr.get(3)) * minDisCoeff), propMinDis);
@@ -69,7 +85,13 @@ public class Replace {
                 } else {
                     minDis = Math.max(baseMinDis, propMinDis);
                 }
-                countBlock = minDis;
+
+                Random rand = new Random();
+                rand.setSeed(System.nanoTime());
+                double ranNumber = (rand.nextDouble() * coeffOfRandMinDis * 2) - coeffOfRandMinDis;
+                minDisRan = (int) Math.round( minDis * (1 + ranNumber) );
+                countBlock = minDisRan;
+
                 if (!substr.get(4).equals("")) {
                     if ((Double.valueOf(substr.get(4)) <= 2) && (Double.valueOf(substr.get(4)) >= 0))
                         importance = Double.valueOf(substr.get(4));
@@ -102,22 +124,42 @@ public class Replace {
             errors = k;
         }
     }
+    public void incCoeffOfUsed(){
+        coeffOfUsed += 1/(double)priority;
 
+        Random rand = new Random();
+        rand.setSeed(System.nanoTime());
+        double ranNumber = (rand.nextDouble() * coeffOfRan * 2) - coeffOfRan;
 
-    public void incCoeffOfUsed() {
-        coeffOfUsed += 1 / (double) priority;
+        coeffOfUsedRan = coeffOfUsed + (1/(double)priority) * ranNumber;
     }
 
-    public void incCountGood(int x) {
-        countGood += x;
+    public void incCountGood(int x) { countGood += x; }
+
+    public void incCountBad(int x) { countBad += x; }
+
+    public void incCountFake(int x) { countFake += x; }
+
+    public void decCountBlock(Map<String, List<Integer>> indexes) {
+        if (minDis != 0) {
+            if (indexes.containsKey(replacement)) incCountBad(indexes.get(replacement).size());
+            indexes.remove(replacement);
+
+            countBlock--;
+
+            if (countBlock == 0) {
+                Random rand = new Random();
+                rand.setSeed(System.nanoTime());
+                double ranNumber = (rand.nextDouble() * coeffOfRandMinDis * 2) - coeffOfRandMinDis;
+                minDisRan = (int) Math.round( minDis * (1 + ranNumber) );
+
+                countBlock = minDisRan;
+            }
+        }
     }
 
-    public void incCountBad(int x) {
-        countBad += x;
-    }
-
-    public void incCountFake(int x) {
-        countFake += x;
+    public boolean isBlocked() {
+        return (countBlock > 0);
     }
 
 

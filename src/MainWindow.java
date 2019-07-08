@@ -42,8 +42,8 @@ public class MainWindow extends JFrame {
     private JLabel modifyZiLabel = new JLabel("Режим обработки слога ци");
     private JLabel probabilityLabel = new JLabel("Вероятность отказа от замены");
     private JLabel variantLabel = new JLabel("Добавление маркеров вариантов");
-    private JLabel randUsedLabel = new JLabel("Добавить рандомизацию использованности");
-    private JLabel randMinDisLabel = new JLabel("Добавить рандомизацию мин.дис");
+    private JLabel randUsedLabel = new JLabel("Рандомизация использованности");
+    private JLabel randMinDisLabel = new JLabel("Рандомизация мин.дис");
     private JTextField randMinDisInput = new JTextField("", 5);
     private JTextField randUsedInput = new JTextField("", 5);
 
@@ -393,11 +393,22 @@ public class MainWindow extends JFrame {
                     Arrays.sort(replaceBase, (o1, o2) -> compareCount(o1, o2));
                     StringBuilder tmpStr = new StringBuilder();
                     for (int i = 0; i < replaceBase.length; i++) {
-                        tmpStr.append(replaceBase[i].replacement + " " + replaceBase[i].substitute + " успешных замен:" + replaceBase[i].countGood + " несостоявшихся замен:" + replaceBase[i].countBad + " " + "\n");
+                        tmpStr.append(replaceBase[i].replacement + " " + replaceBase[i].substitute + " успешных замен:" + replaceBase[i].countGood + " несостоявшихся замен:" + replaceBase[i].countBad + " фиктывные замены: " + replaceBase[i].countFake + "\n");
                     }
                     statistics.setText(tmpStr.toString());
                 }
         );
+        optionsButton.addActionListener((e) -> {
+            JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+            fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int ret = fileopen.showDialog(null, "Открыть options");
+            if (ret == JFileChooser.APPROVE_OPTION) {
+                File file = fileopen.getSelectedFile();
+                /*
+                    file - открытый options файл
+                 */
+            }
+        });
     }
 
     public static String ahaCorasickText(String text, Replace[] replaces, int mark) {
@@ -408,19 +419,20 @@ public class MainWindow extends JFrame {
         for (int i = 0; i < words.length; i++) {
             // Ахо-Карасик
             ahoCorasick = new AhoCorasick();
+            System.out.println(replaces);
             for (int k = 0; k < replaces.length; k++) {
                 ahoCorasick.addToBohr(replaces[k].replacement);
             }
 
-            HundlerWord hw = new HundlerWord(words[i], mark);
+            HundlerWord hw = new HundlerWord(words[i],replaces, mark);
             ahoCorasick.findInd(words[i], hw);
 
             // Обработка слова
             System.out.print("-----> " + words[i] + " :");
             //hw.printIndexes();
 
-            System.out.println(hw.launch(replaces));
-            res.append(hw.launch(replaces) + " ");
+            System.out.println(hw.launch());
+            res.append(hw.launch() + " ");
         }
         for (int i = 0; i < replaces.length; i++)
             System.out.println(replaces[i].replacement + " " + replaces[i].substitute + " " + replaces[i].priority + " " + replaces[i].minDis + " " + replaces[i].importance + " " + replaces[i].coeffOfUsed + " " + replaces[i].countGood + " " + replaces[i].countBad + " " + replaces[i].countFake);
@@ -438,14 +450,14 @@ public class MainWindow extends JFrame {
     }
 
     public static int compareCount(Replace o1, Replace o2) {
-        return ((o1.countGood == o2.countGood) ?
+        return ((o2.countGood == o1.countGood) ?
 
                 ((o1.countBad == o2.countBad) ?
 
-                        ((o1.countFake == o2.countFake) ? 0 : (o1.countFake - o2.countFake))
+                        ((o2.countFake == o1.countFake) ? 0 : (o2.countFake - o1.countFake))
 
                         : (o2.countBad - o1.countBad))
 
-                : (o1.countGood - o2.countGood));
+                : (o2.countGood - o1.countGood));
     }
 }
