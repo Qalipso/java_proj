@@ -1,11 +1,10 @@
 package mypack;
-import mypack.Replace;
 
 import java.util.*;
 
 
 public class HundlerWord {
-    final private String word;
+    private String word;
     public Map<String, List<Integer>> indexes;
     public Map<String, List<Integer>> indexesToAdd;
 
@@ -13,10 +12,11 @@ public class HundlerWord {
     private boolean[] blocksIm;
     private String d;
     Replace[] replaces;
+    private Map<Integer, Integer> groupCount;
 
-    public HundlerWord(String w, Replace[] re, int mark) {
+    public HundlerWord(String w, Replace[] re, Map<Integer, Integer> groupC, int mark) {
         word = w;
-
+        groupCount = groupC;
         indexes = new HashMap<>();
         indexesToAdd = new HashMap<>();
 
@@ -55,8 +55,8 @@ public class HundlerWord {
             if (i == replaces.length) break;
 
             if(indexes.containsKey(replaces[i].replacement) && indexes.get(replaces[i].replacement).size() > 0) {
-                replaces[i].hundlered = true;
-                if (replaces[i].countBlock == replaces[i].minDis) {
+
+                if (replaces[i].countBlock == 0) {
                     int index = indexes.get(replaces[i].replacement).get(0);
 
                     //проверка: не заблокрованы ли буквы которые заменяем?
@@ -94,6 +94,7 @@ public class HundlerWord {
                                 }
                             }
                         }
+
                         // если замена заблокировалась то мы удаляем из indexes индекс вхождения и продолжаем дальше цикл
                         if (!isNotBlocked) {
                             if (indexes.containsKey(replaces[i].replacement)) {
@@ -103,26 +104,9 @@ public class HundlerWord {
                             continue;
                         }
 
-                        //проверяем список подчинённых записей
-                        if (replaces[i].childsStr.size() > 0) {
-                            for (int j = 0; j < replaces[i].childsStr.size(); j++) {
-                                for (Replace replace: replaces) {
-                                    if ( replaces[i].childsStr.get(j).equals(replace.replacement) ) {
-                                        replace.incCoeffOfUsed();
-
-                                        replace.incCountGood(1);
-                                        replace.incCountFake(1);
-
-                                        replace.decCountBlock(indexes);
-                                    }
-                                }
-                            }
-                        }
-
                         //добавляем в Мар идексов для замен
                         if (indexesToAdd.containsKey(replaces[i].replacement)) {
                             indexesToAdd.get(replaces[i].replacement).add(index);
-
                         } else {
                             List<Integer> r = new ArrayList<>();
                             r.add(index);
@@ -135,71 +119,69 @@ public class HundlerWord {
                         }
 
 
-                        // убираем из indexes первое вхождение
-                        if (indexes.containsKey(replaces[i].replacement)) {
-                            indexes.get(replaces[i].replacement).remove(0);
-                            if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
-                        }
-
                         //увеличиваем счетчики
                         replaces[i].incCountGood(1);
                         replaces[i].incCoeffOfUsed();
+                        replaces[i].repBlock(indexes); //блокировка на мин. дис.
+                        //счетчик групп
+                        if (groupCount.containsKey(replaces[i].group)) groupCount.put(replaces[i].group, groupCount.get(replaces[i].group)+1);
+                        else groupCount.put(replaces[i].group, 1);
 
-                        // блокировка замен по мин дис
-                        replaces[i].decCountBlock(indexes);
+                        //проверяем список подчинённых записей
+                        if (replaces[i].childsRep.size() > 0) {
+                            for (int j = 0; j < replaces[i].childsRep.size(); j++) {
+                                replaces[i].childsRep.get(j).incCoeffOfUsed();
 
-                    } else {
-                        //если буквы заблокированы
+                                replaces[i].childsRep.get(j).incCountGood(1);
+                                replaces[i].childsRep.get(j).incCountFake(1);
 
-                        // убираем из indexes первое вхождение
-                        if (indexes.containsKey(replaces[i].replacement)) {
-                            indexes.get(replaces[i].replacement).remove(0);
-                            if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
+                                replaces[i].childsRep.get(j).blockChild();
+                            }
                         }
 
-                        //увеличиваем счетчики
+
+                    } else {
                         replaces[i].incCountBad(1);
                     }
 
-                } else {
-                    replaces[i].decCountBlock(indexes);
                 }
+                //убираем из indexes вхождение
+                indexes.get(replaces[i].replacement).remove(0);
+                if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
 
                 //сортируем по приоритету и приравневаем указатель на замену к 1 замене
                 Arrays.sort(replaces,(o1, o2)-> compare(o1,o2));
-
-                // System.out.println(replaces);
                 i = 0;
             } else i++; // идем дальше по приоритету
 
         }
 
-
-
-        //уменьшаем счетчик блокировки дле тех замен которые не обработались, также сбрасываем все обработки и переходи к следующему слову
+        //уменьшаем счетчик блокировки дле замен и переходим к следующему слову
         for (Replace replace : replaces) {
-            if (!replace.hundlered && replace.countBlock != replace.minDis) {
-                replace.decCountBlock(indexes);
-            }
-
-            if (replace.hundlered) {
-                replace.hundlered = false;
+            if (replace.countBlock != 0) {
+                replace.decCountBlock();
             }
         }
 
 
+        ////////////////////////////////////////////////////////////////////////////////////
         //Далее само построение конечного слова с заменами на заменители по indexesToAdd
         //лист allInds - массив всех индексов вхождений замен отсортированый по неубыванию
+
         List<Integer> allInds = new ArrayList<>();
         for (String key : indexesToAdd.keySet()) {
             allInds.addAll(indexesToAdd.get(key));
         }
         Collections.sort(allInds, (o1, o2) -> compareDec(o1, o2));
+
         StringBuffer ww = new StringBuffer();
         int j = 0;
         while(j < word.length()) {
-
             if (!allInds.contains(j)) {
+                if (j > 0 && isShip(word.charAt(j-1)) && word.charAt(j) == 'й' && allInds.contains(j+1)) {
+                    j++;
+                    continue;
+                }
                 if (ww.length() != 0 && !myIsLetter(ww.charAt(ww.length()-1)) && word.charAt(j) == '́') ww.append('\'');
                 else ww.append(word.charAt(j));
                 j++;
@@ -207,28 +189,42 @@ public class HundlerWord {
                 for (String key : indexesToAdd.keySet()) {
 
                     if (indexesToAdd.get(key).contains(j)) {
-                        j += key.length();
+                        int u = 0;
+                        for  (int k = j; k < j + key.length(); k++) {
+                            if (word.charAt(k) == '&') u++;
+                        }
+                        j += key.length() + u;
 
                         for (Replace replace : replaces) {
                             if (key.equals(replace.replacement)) {
                                 Random rand = new Random(System.nanoTime());
                                 int ranNum = (int) (rand.nextDouble() * replace.substitute.size() );
 
-                                if (ww.length() != 0) {
-
-                                    char x = ww.toString().charAt(ww.length()-1);
-                                    if (x == '$' || x == '&') {
-                                        if (ww.length() > 1) x = ww.toString().charAt(ww.length()-2);
-                                        else break;
-                                    }
-
-                                    if (replace.substitute.get(ranNum).charAt(0) == '/' || replace.substitute.get(ranNum).charAt(0) == '\\'
-                                            || myIsLetter(x)) ww = ww.append(replace.substitute.get(ranNum));
+                                if (!d.equals("i")) {
+                                    if (replace.substitute.get(ranNum).charAt(0) == '/' || replace.substitute.get(ranNum).charAt(0) == '\\')
+                                        ww = ww.append(replace.substitute.get(ranNum));
                                     else ww = ww.append(d + replace.substitute.get(ranNum));
 
+                                    int number = (int) ( Math.random() * 2 );
+                                    if (number == 0) d = "/";
+                                    else d = "\\";
                                 } else {
-                                    ww = ww.append(replace.substitute.get(ranNum));
+                                    if (ww.length() != 0) {
+                                        char x = ww.toString().charAt(ww.length()-1);
+                                        if (x == '$' || x == '&') {
+                                            if (ww.length() > 1) x = ww.toString().charAt(ww.length()-2);
+                                            else break;
+                                        }
+
+                                        if (myIsLetter(x) && x != 'i')
+                                            ww = ww.append(replace.substitute.get(ranNum));
+                                        else ww = ww.append(d + replace.substitute.get(ranNum));
+
+                                    } else {
+                                        ww = ww.append(replace.substitute.get(ranNum));
+                                    }
                                 }
+                                System.out.println(ww);
                                 break;
                             }
                         }
@@ -237,17 +233,8 @@ public class HundlerWord {
             }
 
         }
-        String q = ww.toString();
-        for (int k = 0; k < q.length()-2; k++) {
-            if (q.charAt(k) == '$' || q.charAt(k) =='&') continue;
-            if (q.charAt(k) == 'ш' || q.charAt(k) == 'щ' || q.charAt(k) == 'ж' || q.charAt(k) == 'ц') {
-                if (q.charAt(k+1) == 'й' && q.charAt(k+2) != '$' &&!(((int) q.charAt(k+2) >= 'а') && ((int) q.charAt(k+2) <= 'я')) && !((int) q.charAt(k+2) >= 'А' && (int) q.charAt(k+2) <= 'Я')) {
-                    q = q.substring(0, k+1) + q.substring(k+2);
-                }
-            }
-        }
 
-        return q /*.replaceAll("[&$]", "")*/;
+        return ww.toString();
     }
 
 
@@ -278,5 +265,9 @@ public class HundlerWord {
 
         return (chance - comp > 0.0001);
 
+    }
+
+    public static boolean isShip(char x) {
+        return (x == 'ш' || x == 'щ' || x == 'ж' || x == 'ц' || x == 'ч');
     }
 }

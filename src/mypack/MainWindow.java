@@ -1,32 +1,20 @@
 package mypack;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.io.DataInput;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-
-import com.sun.tools.javac.Main;
-import mypack.ChangeStr;
-import mypack.Replace;
-import mypack.InputFile;
-import mypack.AhoCorasick;
-import mypack.HundlerWord;
+import java.util.*;
 
 import javax.swing.*;
-import java.util.Arrays;
-import java.util.Enumeration;
-import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
-import javax.swing.text.MaskFormatter;
 
 public class MainWindow extends JFrame {
     InputFile data;
     Replace[] replaceBase;
     ArrayList<String> text;
+    Map<Integer, Integer> groupCount;
+    HashMap<String, Float> veropropuskov;
     private JButton openPatternButton = new JButton("Открыть файл Базы замен");
     private JButton openTextButton = new JButton("Открыть текст");
     private JButton saveTextButton = new JButton("Сохранить в файл");
@@ -46,8 +34,8 @@ public class MainWindow extends JFrame {
     private JLabel variantLabel = new JLabel("Добавление маркеров вариантов");
     private JLabel randUsedLabel = new JLabel("Рандомизация использованности");
     private JLabel randMinDisLabel = new JLabel("Рандомизация мин.дис");
-    private JTextField randMinDisInput = new JTextField("", 5);
-    private JTextField randUsedInput = new JTextField("", 5);
+    private JTextField randMinDisInput = new JTextField("0.0", 5);
+    private JTextField randUsedInput = new JTextField("0.0", 5);
 
 
     private JRadioButton e1radio = new JRadioButton("без особенностей");
@@ -59,15 +47,15 @@ public class MainWindow extends JFrame {
     private JRadioButton zi2radio = new JRadioButton("цы интерпретируются как ци");
     private JRadioButton variant1radio = new JRadioButton("без особенностей");
     private JRadioButton variant2radio = new JRadioButton("вставка символов \\ и /");
-    private JTextField baseMinDisInput = new JTextField("", 5);
-    private JTextField probMinDisInput = new JTextField("", 5);
-    private JTextField probabilityInput = new JTextField("", 5);
-    private JTextArea statistics = new JTextArea(20, 50);
+    private JTextField baseMinDisInput = new JTextField("0", 5);
+    private JTextField probMinDisInput = new JTextField("0", 5);
+    private JTextField probabilityInput = new JTextField("0.0", 5);
+    private JTextArea statistics = new JTextArea(15, 50);
 
     public MainWindow() {
         super("Simple Example");
         //System.out.println();
-        this.setBounds(100, 100, 950, 850);
+        this.setBounds(100, 100, 950, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         countUsedSortButton.setEnabled(false);
         coeffUsedSortButton.setEnabled(false);
@@ -111,7 +99,7 @@ public class MainWindow extends JFrame {
         c.ipadx = 1;
         c.ipady = 1;
         c.weightx = 0.1;
-        c.weighty = 0.1;
+        c.weighty = 0.0;
         Container container = new Container();
         container.setLayout(new GridLayout(3, 5, 50, 10));
 
@@ -227,7 +215,7 @@ public class MainWindow extends JFrame {
         openPatternButton.addActionListener((e) -> {
                     replaceBase = null;
                     JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
-                    int ret = fileopen.showDialog(null, "Открыть файл");
+                    int ret = fileopen.showDialog(null, "Открыть файл базы замен");
                     if (ret == JFileChooser.APPROVE_OPTION) {
                         File file = fileopen.getSelectedFile();
                         try {
@@ -287,11 +275,11 @@ public class MainWindow extends JFrame {
         openTextButton.addActionListener((e) -> {
             text = null;
             JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
-            int ret = fileopen.showDialog(null, "Открыть файл");
+            int ret = fileopen.showDialog(null, "Открыть файл исходного текста");
             if (ret == JFileChooser.APPROVE_OPTION) {
                 File file = fileopen.getSelectedFile();
                 try {
-                    text = data.getText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
+                    text = data.getPreparedText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
                 } catch (Throwable ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                 }
@@ -306,8 +294,10 @@ public class MainWindow extends JFrame {
                     if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
                         try (FileWriter fw = new FileWriter(fc.getSelectedFile())) {
                             System.out.println(text);
+                            groupCount = new HashMap<>();
                             for (int i = 0; i < text.size(); i++) {
-                                fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, Integer.parseInt(groupVar.getSelection().getActionCommand())),Integer.parseInt(groupU.getSelection().getActionCommand()))+ System.lineSeparator());
+                                fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, groupCount, Integer.parseInt(groupVar.getSelection().getActionCommand())),Integer.parseInt(groupU.getSelection().getActionCommand()))+ System.lineSeparator());
+                                System.out.println(groupCount);
                             }
                             countUsedSortButton.setEnabled(true);
                             coeffUsedSortButton.setEnabled(true);
@@ -391,74 +381,108 @@ public class MainWindow extends JFrame {
         );
 
         helpButton.addActionListener((e) -> {
-                    mypack.Help w = new mypack.Help();
+                    Help w = new Help();
                     w.setVisible(true);
                 }
         );
 
-        coeffUsedSortButton.addActionListener((e) -> {
-                    Arrays.sort(replaceBase, (o1, o2) -> compareCoef(o1, o2));
-                    StringBuilder tmpStr = new StringBuilder();
-                    for (int i = 0; i < replaceBase.length; i++) {
-                        tmpStr.append(replaceBase[i].replacement + " " + replaceBase[i].substitute + " коэфф. исп." + replaceBase[i].coeffOfUsed + "\n");
-                    }
-                    statistics.setText(tmpStr.toString());
+        optionsButton.addActionListener((e) -> {
+            JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+            int ret = fileopen.showDialog(null, "Открыть options");
+            if (ret == JFileChooser.APPROVE_OPTION) {
+                File file = fileopen.getSelectedFile();
+                try {
+                    veropropuskov = InputFile.loadOptions(file.toPath().toString());
+                } catch (Throwable exe) {
+                    JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
 
+        coeffUsedSortButton.addActionListener((e) -> {
+                    GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+                    StringBuilder tmpStr = new StringBuilder();
+                    for (int i = 0; i < groupCount.size(); i++) {
+                        groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+                    }
+
+                    for (int i = 0; i < groupCount.size(); i++) {
+                        Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCoef(o1, o2));
+                        tmpStr.append(groups[i].printC() + "\n");
+                    }
+
+                    statistics.setText(tmpStr.toString());
                 }
         );
 
         countUsedSortButton.addActionListener((e) -> {
-                    Arrays.sort(replaceBase, (o1, o2) -> compareCount(o1, o2));
+                    GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
                     StringBuilder tmpStr = new StringBuilder();
-                    for (int i = 0; i < replaceBase.length; i++) {
-                        tmpStr.append(replaceBase[i].replacement + " " + replaceBase[i].substitute + " успешных замен:" + replaceBase[i].countGood + " несостоявшихся замен:" + replaceBase[i].countBad + " фиктывные замены: " + replaceBase[i].countFake + "\n");
+                    for (int i = 0; i < groupCount.size(); i++) {
+                        groups[i] = new GroupReplaces(replaceBase, groupCount, i);
                     }
+
+                    for (int i = 0; i < groupCount.size(); i++) {
+                        Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCount(o1, o2));
+                        tmpStr.append(groups[i].print() + "\n");
+                    }
+
                     statistics.setText(tmpStr.toString());
                 }
         );
-        optionsButton.addActionListener((e) -> {
-            JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
-            fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int ret = fileopen.showDialog(null, "Открыть options");
-            if (ret == JFileChooser.APPROVE_OPTION) {
-                File file = fileopen.getSelectedFile();
-                /*
-                    file - открытый options файл
-                 */
-            }
-        });
 
         groupSortButton.addActionListener((e) ->{
-            /*
-            Сортировка по группам.
-             */
+
+            GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+            StringBuilder tmpStr = new StringBuilder();
+            for (int i = 0; i < groupCount.size(); i++) {
+                groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+            }
+
+            Arrays.sort(groups, (o1, o2) -> compareGroup(o1, o2));
+
+            for (int i = 0; i < groupCount.size(); i++) {
+                tmpStr.append(groups[i].printG() + "\n");
+            }
+
+           statistics.setText(tmpStr.toString());
         });
     }
 
-    public static String ahaCorasickText(String text, Replace[] replaces, int mark) {
-        AhoCorasick ahoCorasick;
+    public String ahaCorasickText(String text, Replace[] replaces, Map<Integer, Integer> groupCount, int mark) {
+        AhoCorasick ahoCorasick = new AhoCorasick();
+        for (int k = 0; k < replaces.length; k++) {
+            ahoCorasick.addToBohr(replaces[k].replacement);
+        }
         String[] words = text.split(" ");
-        if (!Character.isLetter(words[0].charAt(0))) words[0] = words[0].substring(1);
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < words.length; i++) {
-            // Ахо-Карасик
-            ahoCorasick = new AhoCorasick();
-            for (int k = 0; k < replaces.length; k++) {
-                ahoCorasick.addToBohr(replaces[k].replacement);
-            }
 
-            HundlerWord hw = new HundlerWord(words[i], replaces, mark);
+            HundlerWord hw = new HundlerWord(words[i], replaces, groupCount, mark);
             ahoCorasick.findInd(words[i], hw);
 
-            // Обработка слова
-            //System.out.print("-----> " + words[i] + " :");
-            //hw.printIndexes();
+            for (String key : hw.indexes.keySet()) {
+                Collections.shuffle(hw.indexes.get(key));
+            }
 
-          //  System.out.println(hw.launch(replaces));
+            if (veropropuskov != null) {
+                // вычеркиваем некоторые найденные фрагменты
+                for (String key : hw.indexes.keySet()) {
+                    if (veropropuskov.containsKey(key) && veropropuskov.get(key) > 0) {
+                        int lenInd = hw.indexes.get(key).size();
+                        for (int j = 0; j < lenInd; j++) {
+                            if (HundlerWord.experiment(veropropuskov.get(key))) {
+                                hw.indexes.get(key).remove(0);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            // Добавление измененного слова в результат
             res.append(hw.launch() + " ");
         }
-//        for (int i = 0; i < replaces.length; i++)
-//            System.out.println(replaces[i].replacement + " " + replaces[i].substitute + " " + replaces[i].priority + " " + replaces[i].minDis + " " + replaces[i].importance + " " + replaces[i].coeffOfUsed + " " + replaces[i].countGood + " " + replaces[i].countBad + " " + replaces[i].countFake);
 
         return res.toString();
     }
@@ -483,4 +507,9 @@ public class MainWindow extends JFrame {
 
                 : (o2.countGood - o1.countGood));
     }
+    public static int compareIntReverse(int o1, int o2) {
+        return o1 - o2;
+    }
+
+    public static int compareGroup(GroupReplaces o1, GroupReplaces o2) {return o2.countRep - o1.countRep;}
 }

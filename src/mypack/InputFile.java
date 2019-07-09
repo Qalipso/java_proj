@@ -1,19 +1,15 @@
 package mypack;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
-import mypack.Replace;
-import mypack.ChangeStr;
+import java.util.HashMap;
 
 public class InputFile {
 
     public double coeffa;
     public double coeffb;
-    ArrayList<String> forChange;
-    ArrayList<String> text;
+    ArrayList<String> forChange; // массив строк базы замен
+    ArrayList<String> preparedText;
 
     public InputFile(String patternWay) throws Throwable {
         String input;
@@ -48,7 +44,7 @@ public class InputFile {
         }
     }
 
-    public mypack.Replace[] getReplace(int baseMinDis, int propMinDis, int modifyU, double probability, double randmindis, double randUsed) throws Throwable {
+    public Replace[] getReplace(int baseMinDis, int propMinDis, int modifyU, double probability, double randmindis, double randUsed) throws Throwable {
         Replace[] replaceBase1 = new Replace[1];
         ArrayList<Replace> replaceBase = new ArrayList<>();
         Integer[] masgroup = new Integer[forChange.size()];
@@ -69,11 +65,11 @@ public class InputFile {
             }
         }
         for (int i = 0; i < replaceBase.size(); i++) {
-            if (replaceBase.get(i).childs != null)
-                for (int k = 0; k < replaceBase.get(i).childs.size(); k++) {
+            if (replaceBase.get(i).childsInt != null)
+                for (int k = 0; k < replaceBase.get(i).childsInt.size(); k++) {
                     try {
-                        if ((replaceBase.get(i).childs.get(k) < replaceBase.size()) && (replaceBase.get(i).childs.get(k) != null)) {
-                            replaceBase.get(i).childsStr.add(replaceBase.get(replaceBase.get(i).childs.get(k) + masgroup[replaceBase.get(i).group]));
+                        if ((replaceBase.get(i).childsInt.get(k) < replaceBase.size()) && (replaceBase.get(i).childsInt.get(k) != null)) {
+                            replaceBase.get(i).childsRep.add(replaceBase.get(replaceBase.get(i).childsInt.get(k) + masgroup[replaceBase.get(i).group]));
                         }
                     } catch (Exception exe) {
                         Throwable ee = new Exception("Ошибка ввода в строке " + (i + 1));
@@ -81,17 +77,18 @@ public class InputFile {
                     }
 
                 }
-            System.out.println(replaceBase.get(i).replacement + " childs:" + replaceBase.get(i).childsStr);
+            System.out.println(replaceBase.get(i).replacement + " childsInt:" + replaceBase.get(i).childsRep);
         }
         replaceBase1 = replaceBase.toArray(replaceBase1);
         return replaceBase1;
     }
 
-    public ArrayList<String> getText(String textWay, int modifyE, int modifyU, int modifyZi) throws Throwable {
-        text = new ArrayList<>();
+    public ArrayList<String> getPreparedText(String textWay, int modifyE, int modifyU, int modifyZi) throws Throwable {
+        preparedText = new ArrayList<>();
+
         try {
-            FileInputStream fstream = new FileInputStream(textWay);
-            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+            InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(textWay));
+            BufferedReader br = new BufferedReader(new InputStreamReader(inpStream));
             String strLine;
             StringBuilder buildStr = new StringBuilder();
             ChangeStr tmp = new ChangeStr();
@@ -102,13 +99,13 @@ public class InputFile {
                     buildStr.replace(0, buildStr.toString().length(), tmp.modU(buildStr.toString()));
                 if (modifyZi != 0)
                     buildStr.replace(0, buildStr.toString().length(), tmp.modZi(buildStr.toString()));
-                text.add(buildStr.toString());
+                preparedText.add(buildStr.toString());
             }
         } catch (IOException e) {
             Throwable ex = new Exception("Ошибка в считывании файла");
             throw ex;
         }
-        return text;
+        return preparedText;
     }
 
     private static InputStream checkForUtf8BOMAndDiscardIfAny(InputStream inputStream) throws IOException {
@@ -121,4 +118,24 @@ public class InputFile {
         }
         return pushbackInputStream;
     }
+
+    public static HashMap<String, Float> loadOptions(String optionsWay) throws Throwable {
+        int si=0;
+        HashMap<String, Float> hm = new HashMap<>();
+        try {
+            InputStream istream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(optionsWay));
+            BufferedReader br = new BufferedReader(new InputStreamReader(istream));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                si++;
+                String[] strElements = strLine.split("\t");
+                hm.put(strElements[0], Float.parseFloat(strElements[1]));
+            }
+        } catch (Throwable e) {
+            e = new Exception("Ошибка в считывании опций, строка "+si);
+            throw e;
+        }
+        return hm;
+    }
+
 }

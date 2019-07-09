@@ -44,8 +44,6 @@ public class AhoCorasick {
         if(!bohr.get(vex).move.containsKey(symb)) {
             if(bohr.get(vex).next_vexes.containsKey(symb)) {
                 bohr.get(vex).move.put(symb, bohr.get(vex).next_vexes.get(symb));
-            } else if (bohr.get(vex).next_vexes.containsKey('&') ) {
-                bohr.get(vex).move.put(symb, bohr.get(vex).next_vexes.get('&'));
             } else if(vex == 0) {
                 bohr.get(vex).move.put(symb, 0);
             } else {
@@ -56,21 +54,27 @@ public class AhoCorasick {
         return bohr.get(vex).move.get(symb);
     }
 
-    public void findInd(String text, mypack.HundlerWord hw) {
+    public void findInd(String text, HundlerWord hw) {
         int t = 0;
+        int k = 0;
         for(int i = 0; i < text.length(); i++) {
-
+            if (text.charAt(i) == '&') {
+                k = 1;
+                continue;
+            }
             t = this.getMove(t, text.toCharArray()[i]);
+
             if (text.toCharArray()[i] == '$') {
                 t = 0;
                 continue;
             }
 
-            this.check(t, i, hw);
+            this.check(t, i-k, hw);
+            k = 0;
         }
     }
 
-    private void check(int vex, int i, mypack.HundlerWord hw) {
+    private void check(int vex, int i, HundlerWord hw) {
         for(int t = vex; t != 0; t = getSuffixLink(t)) {
             if(bohr.get(t).flag) {
                 int index = i - (patterns.get(bohr.get(t).pattern_index).length() - 1);
@@ -82,6 +86,10 @@ public class AhoCorasick {
                     List<Integer> r = new ArrayList<>();
                     r.add(index);
                     hw.indexes.put(patterns.get(bohr.get(t).pattern_index), r);
+                    //hw.indexes.get(ключ).size() - кол-во вхождений ключа в слове
+                    //hw.indexes.get(ключ).get(n-1) - получить индекс n-ого вхождения ключа в слове
+                    //hw.indexes.put(ключ, массив индексов вхождений)
+                    //patterns.get(bohr.get(t).pattern_index) - получить ключ из бора
                 }
             }
         }
