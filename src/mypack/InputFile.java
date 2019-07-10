@@ -94,11 +94,13 @@ public class InputFile {
             ChangeStr tmp = new ChangeStr();
             while ((strLine = br.readLine()) != null) {
                 buildStr.replace(0, buildStr.length(), "");
-                buildStr.append(tmp.modE(strLine, modifyE));
+                buildStr.append(tmp.modSpecial(strLine+" "));
+                buildStr.replace(0, buildStr.toString().length(), tmp.modE(buildStr.toString(),modifyE));
                 if (modifyU != 0)
                     buildStr.replace(0, buildStr.toString().length(), tmp.modU(buildStr.toString()));
                 if (modifyZi != 0)
                     buildStr.replace(0, buildStr.toString().length(), tmp.modZi(buildStr.toString()));
+
                 preparedText.add(buildStr.toString());
             }
         } catch (IOException e) {

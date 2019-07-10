@@ -1,6 +1,60 @@
 package mypack;
 
 public class ChangeStr {
+    public String modSpecial(String str){
+        StringBuilder tmpStr = new StringBuilder();
+        for (int i =0;i<str.length();i++) {
+            if (str.charAt(i) == '&'){
+                tmpStr.append("$&");
+            }
+            else
+            if (str.charAt(i) == '$'){
+                tmpStr.append("$$");
+            }
+            else if (str.charAt(i) == '!' && str.charAt(i+1) != ' ' && str.charAt(i+1) != '?' && str.charAt(i+1) != '!' && str.charAt(i+1) != '.') {
+                tmpStr.append("! ");
+            }
+            else if (str.charAt(i) == '?' && str.charAt(i+1) != ' ' && str.charAt(i+1) != '?' && str.charAt(i+1) != '!' && str.charAt(i+1) != '.') {
+                tmpStr.append("? ");
+            }
+            else if (str.charAt(i) == ',' && str.charAt(i+1) != ' ') {
+                tmpStr.append(", ");
+            }
+            else if (str.charAt(i) == '.' && str.charAt(i+1) == '.') {
+                tmpStr.append(".");
+            }
+            else if (str.charAt(i) == '.' && str.charAt(i+1) != ' ') {
+                tmpStr.append(". ");
+            }
+
+            else if (str.charAt(i) == ':' && str.charAt(i+1) != ' ') {
+                tmpStr.append(": ");
+            }
+            else if (str.charAt(i) == ';' && str.charAt(i+1) != ' ') {
+                tmpStr.append("; ");
+            }
+            else if (str.charAt(i) == '\t' && str.charAt(i+1) != ' ') {
+                tmpStr.append("\t ");
+            }
+            else if (str.charAt(i) == (char)0x00A0 && str.charAt(i+1) != ' ') {
+                tmpStr.append(" ");
+            }
+            else if (str.charAt(i) == (char)0x2007 && str.charAt(i+1) != ' ' ) {
+                tmpStr.append(" ");
+            }
+            else if (str.charAt(i) == (char)0x202F && str.charAt(i+1) != ' ' ) {
+                tmpStr.append(" ");
+            }
+            else if (str.charAt(i) == (char)0x2060 && str.charAt(i+1) != ' ' ) {
+                tmpStr.append(" ");
+            }
+            else
+                tmpStr.append(str.charAt(i));
+
+        }
+        tmpStr.append(str.charAt(str.length()-1));
+return tmpStr.toString();
+    }
     public String modE(String str, int modifyE) {
         StringBuilder tmpStr = new StringBuilder();
         if (modifyE == 0) {
@@ -86,7 +140,17 @@ public class ChangeStr {
 
     public String getFinStr(String str, int modU) {
         StringBuilder tmpStr = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length()-1; i++) {
+            if ((str.charAt(i) == '$') && (str.charAt(i+1) == '$')){
+                tmpStr.append('$');
+                i++;
+                continue;
+            }
+            if ((str.charAt(i) == '$') && (str.charAt(i+1) == '&')){
+                tmpStr.append('&');
+                i++;
+                continue;
+            }
             if ((str.charAt(i) == '&') && (str.charAt(i + 1) == 'э')) {
                 tmpStr.append("э");
                 i++;
