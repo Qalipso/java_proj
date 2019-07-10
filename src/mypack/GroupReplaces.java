@@ -27,7 +27,7 @@ public class GroupReplaces {
         StringBuilder tmpStr = new StringBuilder();
         tmpStr.append("Группа №"+numberOfGr+"\n");
         for (Replace replace : replacesInGr) {
-            tmpStr.append(replace.replacement + " " + replace.substitute + " успешных замен:" + replace.countGood + " несостоявшихся замен:" + replace.countBad + " фиктивные замены: " + replace.countFake + "\n");
+            tmpStr.append(replace.replacement.replaceAll("[$&]", "") + " " + replace.substitute + " успешных замен:" + replace.countGood + " несостоявшихся замен:" + replace.countBad + " фиктивные замены: " + replace.countFake + "\n");
         }
         return tmpStr.toString();
     }
@@ -36,7 +36,7 @@ public class GroupReplaces {
         StringBuilder tmpStr = new StringBuilder();
         tmpStr.append("Группа №"+numberOfGr+"\n");
         for (Replace replace : replacesInGr) {
-            tmpStr.append(replace.replacement + " " + replace.substitute + " коэфф. исп." + replace.coeffOfUsed + "\n");
+            tmpStr.append(replace.replacement.replaceAll("[$&]", "") + " " + replace.substitute + " коэфф. исп." + replace.coeffOfUsed + "\n");
         }
         return tmpStr.toString();
     }
@@ -45,7 +45,7 @@ public class GroupReplaces {
         StringBuilder tmpStr = new StringBuilder();
         tmpStr.append("Группа №"+numberOfGr+" кол-во замен: "+countRep+"\n");
         for (Replace replace : replacesInGr) {
-            tmpStr.append(replace.replacement + " " + replace.substitute +  " успешных замен:" + replace.countGood + " фиктивные замены: " + replace.countFake + "\n");
+            tmpStr.append(replace.replacement.replaceAll("[$&]", "") + " " + replace.substitute +  " успешных замен:" + replace.countGood + " фиктивные замены: " + replace.countFake + "\n");
         }
         return tmpStr.toString();
     }

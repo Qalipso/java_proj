@@ -66,6 +66,7 @@ public class MainWindow extends JFrame {
         //System.out.println();
         this.setBounds(100, 100, 950, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pathTextInput.setBackground(new Color(255,255,100));
         countUsedSortButton.setEnabled(false);
         coeffUsedSortButton.setEnabled(false);
         groupSortButton.setEnabled(false);
@@ -88,9 +89,9 @@ public class MainWindow extends JFrame {
         toolBar.setFloatable(false);
         toolBar.add(openPatternButton);
         toolBar.add(openDirButton);
+        toolBar.add(optionsButton);
         toolBar.add(openTextButton);
         toolBar.add(saveTextButton);
-        toolBar.add(optionsButton);
         toolBar.add(helpButton);
         toolBar.setPreferredSize(new Dimension(this.getWidth() - 20, 50));
         add(toolBar, BorderLayout.NORTH);
@@ -184,8 +185,8 @@ public class MainWindow extends JFrame {
         panelText.add(pathTextLabel);
         panelText.add(pathTextInput);
         container.add(panelPattern);
-        container.add(panelText);
         container.add(panelOptions);
+        container.add(panelText);
         container.add(panelBaseMin);
         container.add(panelProbMin);
         container.add(panelProb);
@@ -239,6 +240,7 @@ public class MainWindow extends JFrame {
         ButtonGroup groupVar = new ButtonGroup();
         groupVar.add(variant1radio);
         groupVar.add(variant2radio);
+
 
         variant1radio.setSelected(true);
         openPatternButton.addActionListener((e) -> {
@@ -331,11 +333,11 @@ public class MainWindow extends JFrame {
                             //fw.write(0xBF);
                             for (int i = 0; i < text.size(); i++) {
                                 fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, groupCount, Integer.parseInt(groupVar.getSelection().getActionCommand())),Integer.parseInt(groupU.getSelection().getActionCommand()))+ System.lineSeparator());
-                                System.out.println(groupCount);
                             }
                             countUsedSortButton.setEnabled(true);
                             coeffUsedSortButton.setEnabled(true);
                             groupSortButton.setEnabled(true);
+                            groupSort();
                         } catch (IOException exe) {
                             JOptionPane.showMessageDialog(null, "Ошибка в записи файла", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                         }
@@ -362,9 +364,10 @@ public class MainWindow extends JFrame {
                             ArrayList<Replace> tmparr = new ArrayList<>();
                             File[] filesInDir = folder.listFiles();
                             for (File f : filesInDir) {
-                                if (f.getName() == "options.txt") {
+                                if (f.getName().equals("options.txt")) {
                                     try {
                                         veropropuskov = InputFile.loadOptions(f.toPath().toString());
+                                        System.out.println(veropropuskov.keySet());
                                     } catch (Throwable exe) {
                                         JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                     }
@@ -476,23 +479,25 @@ public class MainWindow extends JFrame {
         );
 
         groupSortButton.addActionListener((e) ->{
-
-            GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
-            StringBuilder tmpStr = new StringBuilder();
-            for (int i = 0; i < groupCount.size(); i++) {
-                groups[i] = new GroupReplaces(replaceBase, groupCount, i);
-            }
-
-            Arrays.sort(groups, (o1, o2) -> compareGroup(o1, o2));
-
-            for (int i = 0; i < groupCount.size(); i++) {
-                tmpStr.append(groups[i].printG() + "\n");
-            }
-
-           statistics.setText(tmpStr.toString());
+            groupSort();
         });
     }
 
+    public void groupSort(){
+        GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+        StringBuilder tmpStr = new StringBuilder();
+        for (int i = 0; i < groupCount.size(); i++) {
+            groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+        }
+
+        Arrays.sort(groups, (o1, o2) -> compareGroup(o1, o2));
+
+        for (int i = 0; i < groupCount.size(); i++) {
+            tmpStr.append(groups[i].printG() + "\n");
+        }
+
+        statistics.setText(tmpStr.toString());
+    }
     public String ahaCorasickText(String text, Replace[] replaces, Map<Integer, Integer> groupCount, int mark) {
         AhoCorasick ahoCorasick = new AhoCorasick();
         for (int k = 0; k < replaces.length; k++) {
@@ -500,12 +505,12 @@ public class MainWindow extends JFrame {
         }
         String[] words = text.split(" ");
         StringBuilder res = new StringBuilder();
-        Pattern pattern = Pattern.compile("[а-яА-Я]");
+        Pattern pattern = Pattern.compile("[а-яА-ЯёЁ]");
         for (int i = 0; i < words.length; i++) {
             Matcher matcher = pattern.matcher(words[i]);
             if (matcher.find()) {
                 HundlerWord hw = new HundlerWord(words[i], replaces, groupCount, mark);
-                ahoCorasick.findInd(words[i], hw);
+                ahoCorasick.findInd(words[i].toLowerCase(), hw);
 
                 for (String key : hw.indexes.keySet()) {
                     Collections.shuffle(hw.indexes.get(key));

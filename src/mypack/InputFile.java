@@ -66,6 +66,14 @@ public class InputFile {
         }
         for (int i = 0; i < replaceBase.size(); i++) {
             if (replaceBase.get(i).childsInt != null)
+                // добавление всeх в ckild из группы
+//                if (replaceBase.get(i).childsInt.contains(0)) {
+//
+//                }
+                //
+//                if (replaceBase.get(i).childsInt.contains(0))
+//                    for (int z = 0;z<masgroup[replaceBase.get(i).group-masgroup[replaceBase.get(i).group-1]];z++)
+//                        replaceBase.get(i).childsRep.add(replaceBase.get(z + masgroup[replaceBase.get(i).group-1]));
                 for (int k = 0; k < replaceBase.get(i).childsInt.size(); k++) {
                     try {
                         if ((replaceBase.get(i).childsInt.get(k) < replaceBase.size()) && (replaceBase.get(i).childsInt.get(k) != null)) {

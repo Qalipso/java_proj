@@ -135,6 +135,7 @@ public class Replace {
     public void incCountFake(int x) { countFake += x; }
 
     public void decCountBlock() {
+
 //        if (minDis != 0) {
 
 //
@@ -145,13 +146,13 @@ public class Replace {
 //
 //                countBlock = (int) Math.round( minDis * (1 + ranNumber) );
 //            }
-
             countBlock--;
 //        }
+
     }
 
     public void repBlock(Map<String, List<Integer>> indexes) {
-//удаление вне зависимости успех или неудача
+        //удаление вне зависимости успех или неудача
         Random rand = new Random();
         rand.setSeed(System.nanoTime());
         double ranNumber = (rand.nextDouble() * coeffOfRandMinDis * 2) - coeffOfRandMinDis;
@@ -166,10 +167,5 @@ public class Replace {
 
         countBlock = Math.max(countBlock, (int) Math.round( minDis * (1 + ranNumber) ));
     }
-
-    public boolean isBlocked() {
-        return (countBlock > 0);
-    }
-
 
 }

@@ -3,6 +3,7 @@ import java.awt.*;
 import javax.swing.*;
 public class Help extends JFrame{
     private JLabel aboutDisLabel = new JLabel("Об авторах:");
+    private JLabel universityLabel = new JLabel("");
     private JLabel fioDisLabel = new JLabel("Шаталов Эдуард & Миннинг Михаил");
     public Help(){
         super("Help");
@@ -25,6 +26,7 @@ public class Help extends JFrame{
         c.weightx = 0.0;
         c.weighty = 0.0;
         container.add(aboutDisLabel,c);
+        container.add(universityLabel,c);
         container.add(fioDisLabel,c);
     }
 }

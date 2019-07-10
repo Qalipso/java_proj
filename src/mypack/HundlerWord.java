@@ -104,7 +104,7 @@ public class HundlerWord {
                             continue;
                         }
 
-                        //добавляем в Мар идексов для замен
+                        //иначе добавляем в Мар идексов для замен
                         if (indexesToAdd.containsKey(replaces[i].replacement)) {
                             indexesToAdd.get(replaces[i].replacement).add(index);
                         } else {
@@ -126,6 +126,11 @@ public class HundlerWord {
                         //счетчик групп
                         if (groupCount.containsKey(replaces[i].group)) groupCount.put(replaces[i].group, groupCount.get(replaces[i].group)+1);
                         else groupCount.put(replaces[i].group, 1);
+                        for (int key : groupCount.keySet()) {
+                            for (int k = 0; k < key; k++) {
+                                if (!groupCount.containsKey(k)) groupCount.put(k, 0);
+                            }
+                        }
 
                         //проверяем список подчинённых записей
                         if (replaces[i].childsRep.size() > 0) {
@@ -166,7 +171,7 @@ public class HundlerWord {
 
         ////////////////////////////////////////////////////////////////////////////////////
         //Далее само построение конечного слова с заменами на заменители по indexesToAdd
-        //лист allInds - массив всех индексов вхождений замен отсортированый по неубыванию
+        //лист allInds - массив всех индексов вхождений замен отсортированый по возрастанию
 
         List<Integer> allInds = new ArrayList<>();
         for (String key : indexesToAdd.keySet()) {
@@ -176,7 +181,9 @@ public class HundlerWord {
 
         StringBuffer ww = new StringBuffer();
         int j = 0;
+
         while(j < word.length()) {
+
             if (!allInds.contains(j)) {
                 if (j > 0 && isShip(word.charAt(j-1)) && word.charAt(j) == 'й' && allInds.contains(j+1)) {
                     j++;
@@ -189,11 +196,12 @@ public class HundlerWord {
                 for (String key : indexesToAdd.keySet()) {
 
                     if (indexesToAdd.get(key).contains(j)) {
-                        int u = 0;
-                        for  (int k = j; k < j + key.length(); k++) {
-                            if (word.charAt(k) == '&') u++;
+
+                        StringBuffer strForCompare = new StringBuffer();
+                        while (!strForCompare.toString().toLowerCase().equals(key.toLowerCase()) && j < word.length()) {
+                            if (word.charAt(j) != '$' && word.charAt(j) != '&') strForCompare.append(word.charAt(j));
+                            j++;
                         }
-                        j += key.length() + u;
 
                         for (Replace replace : replaces) {
                             if (key.equals(replace.replacement)) {
@@ -213,7 +221,7 @@ public class HundlerWord {
                                         char x = ww.toString().charAt(ww.length()-1);
                                         if (x == '$' || x == '&') {
                                             if (ww.length() > 1) x = ww.toString().charAt(ww.length()-2);
-                                            else break;
+                                            else x = 'а';
                                         }
 
                                         if (myIsLetter(x) && x != 'i')
@@ -224,7 +232,7 @@ public class HundlerWord {
                                         ww = ww.append(replace.substitute.get(ranNum));
                                     }
                                 }
-                                System.out.println(ww);
+
                                 break;
                             }
                         }
@@ -233,6 +241,7 @@ public class HundlerWord {
             }
 
         }
+
 
         return ww.toString();
     }
@@ -254,6 +263,7 @@ public class HundlerWord {
         if (o1.coeffOfUsedRan - o2.coeffOfUsedRan > 0.0001) return 1;
         else return -1;
     }
+
     public static boolean myIsLetter(char x) {
         return ( (((int) x >= 'а') && ((int) x <= 'я')) || ( ((int) x >= 'А') && ((int) x <= 'Я')) || x =='\'' );
     }

@@ -62,7 +62,7 @@ public class AhoCorasick {
                 k = 1;
                 continue;
             }
-            t = this.getMove(t, text.toCharArray()[i]);
+            t = this.getMove(t, text.charAt(i));
 
             if (text.toCharArray()[i] == '$') {
                 t = 0;
