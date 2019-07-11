@@ -531,13 +531,13 @@ public class MainWindow extends JFrame {
             });
 
             coeffUsedSortButton.addActionListener((e) -> {
-                        GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+                        GroupReplaces[] groups = new GroupReplaces[groupCount.size()-1];
                         StringBuilder tmpStr = new StringBuilder();
-                        for (int i = 0; i < groupCount.size(); i++) {
-                            groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+                        for (int i = 1; i < groupCount.size(); i++) {
+                            groups[i-1] = new GroupReplaces(replaceBase, groupCount, i);
                         }
 
-                        for (int i = 0; i < groupCount.size(); i++) {
+                        for (int i = 0; i < groupCount.size()-1; i++) {
                             Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCoef(o1, o2));
                             tmpStr.append(groups[i].printC() + "\n");
                         }
@@ -547,13 +547,13 @@ public class MainWindow extends JFrame {
             );
 
             countUsedSortButton.addActionListener((e) -> {
-                        GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+                        GroupReplaces[] groups = new GroupReplaces[groupCount.size()-1];
                         StringBuilder tmpStr = new StringBuilder();
-                        for (int i = 0; i < groupCount.size(); i++) {
-                            groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+                        for (int i = 1; i < groupCount.size(); i++) {
+                            groups[i-1] = new GroupReplaces(replaceBase, groupCount, i);
                         }
 
-                        for (int i = 0; i < groupCount.size(); i++) {
+                        for (int i = 0; i < groupCount.size()-1; i++) {
                             Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCount(o1, o2));
                             tmpStr.append(groups[i].print() + "\n");
                         }
@@ -568,15 +568,15 @@ public class MainWindow extends JFrame {
         }
 
         public void groupSort () {
-            GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+            GroupReplaces[] groups = new GroupReplaces[groupCount.size()-1];
             StringBuilder tmpStr = new StringBuilder();
-            for (int i = 0; i < groupCount.size(); i++) {
-                groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+            for (int i = 1; i < groupCount.size(); i++) {
+                groups[i-1] = new GroupReplaces(replaceBase, groupCount, i);
             }
 
             Arrays.sort(groups, (o1, o2) -> compareGroup(o1, o2));
 
-            for (int i = 0; i < groupCount.size(); i++) {
+            for (int i = 0; i < groupCount.size()-1; i++) {
                 tmpStr.append(groups[i].printG() + "\n");
             }
 
