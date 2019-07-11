@@ -100,7 +100,7 @@ public class Replace {
                     String[] tmpmas;
                     tmpmas = substr.get(5).split(" ");
                     for (int i = 0; i < tmpmas.length; i++) {
-                        childsInt.add(Integer.parseInt(tmpmas[i]) - 1);
+                        childsInt.add(Integer.parseInt(tmpmas[i]));
                     }
                 }
 

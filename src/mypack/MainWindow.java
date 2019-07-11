@@ -60,18 +60,21 @@ public class MainWindow extends JFrame {
     private JTextField pathTextInput = new JTextField("");
     private JTextField pathOptionInput = new JTextField("");
     private JTextArea statistics = new JTextArea(15, 50);
+    String patternpath = "";
+    String textpath = "";
+    String optionspath = "";
 
     public MainWindow() {
         super("Simple Example");
         //System.out.println();
         this.setBounds(100, 100, 950, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pathTextInput.setBackground(new Color(255,255,100));
+        pathTextInput.setBackground(new Color(255, 255, 100));
         countUsedSortButton.setEnabled(false);
         coeffUsedSortButton.setEnabled(false);
         groupSortButton.setEnabled(false);
-        coeffUsedSortButton.setMaximumSize(new Dimension(100,100));
-        countUsedSortButton.setMaximumSize(new Dimension(100,100));
+        coeffUsedSortButton.setMaximumSize(new Dimension(100, 100));
+        countUsedSortButton.setMaximumSize(new Dimension(100, 100));
 
         statistics.setEditable(false);
         openTextButton.setEnabled(false);
@@ -90,7 +93,9 @@ public class MainWindow extends JFrame {
         toolBar.add(openPatternButton);
         toolBar.add(openDirButton);
         toolBar.add(optionsButton);
+        toolBar.add(new Label("   "));
         toolBar.add(openTextButton);
+        toolBar.add(new Label("   "));
         toolBar.add(saveTextButton);
         toolBar.add(helpButton);
         toolBar.setPreferredSize(new Dimension(this.getWidth() - 20, 50));
@@ -102,7 +107,7 @@ public class MainWindow extends JFrame {
         c.fill = GridBagConstraints.BOTH;
         c.gridheight = 1;
         c.gridwidth = GridBagConstraints.REMAINDER;
-       // c.gridx = GridBagConstraints.RELATIVE;
+        // c.gridx = GridBagConstraints.RELATIVE;
         c.gridx = 0;
         c.gridy = GridBagConstraints.RELATIVE;
         c.insets = new Insets(0, 0, 0, 0);
@@ -118,52 +123,46 @@ public class MainWindow extends JFrame {
         probabilityInput.setPreferredSize(new Dimension(80, 10));
         randMinDisInput.setPreferredSize(new Dimension(80, 10));
         JPanel panelE = new JPanel(new GridLayout(4, 1));
-        //panelE.setPreferredSize(new Dimension(150, 50));
         panelE.add(modifyELabel);
         panelE.add(e1radio);
         panelE.add(e2radio);
         panelE.add(e3radio);
 
         JPanel panelU = new JPanel(new GridLayout(3, 1));
-        //panelU.setPreferredSize(new Dimension(200, 100));
         panelU.add(modifyULabel);
         panelU.add(u1radio);
         panelU.add(u2radio);
 
         JPanel panelZi = new JPanel(new GridLayout(3, 1));
-        //panelZi.setPreferredSize(new Dimension(150, 50));
         panelZi.add(modifyZiLabel);
         panelZi.add(zi1radio);
         panelZi.add(zi2radio);
 
         JPanel panelVariable = new JPanel(new GridLayout(3, 1));
-        //panelVariable.setPreferredSize(new Dimension(150, 50));
         panelVariable.add(variantLabel);
         panelVariable.add(variant1radio);
         panelVariable.add(variant2radio);
 
         JPanel panelBaseMin = new JPanel(new GridLayout(2, 1));
-       // panelBaseMin.setPreferredSize(new Dimension(150, 50));
         panelBaseMin.add(baseMinDisLabel);
         panelBaseMin.add(baseMinDisInput);
 
         JPanel panelProbMin = new JPanel(new GridLayout(2, 1));
-        //panelProbMin.setPreferredSize(new Dimension(150, 50));
         panelProbMin.add(probMinDisLabel);
         panelProbMin.add(probMinDisInput);
 
         JPanel panelProb = new JPanel(new GridLayout(2, 1));
-        //panelProb.setPreferredSize(new Dimension(150, 50));
+
         panelProb.add(probabilityLabel);
         panelProb.add(probabilityInput);
 
         JPanel panelRandUsed = new JPanel(new GridLayout(2, 1));
-        //panelRandUsed.setPreferredSize(new Dimension(150, 50));
+
         panelRandUsed.add(randUsedLabel);
         panelRandUsed.add(randUsedInput);
 
         JPanel panelRandMinDis = new JPanel(new GridLayout(2, 1));
-        //panelRandMinDis.setPreferredSize(new Dimension(150, 50));
+
         panelRandMinDis.add(randMinDisLabel);
         panelRandMinDis.add(randMinDisInput);
 
@@ -171,16 +170,16 @@ public class MainWindow extends JFrame {
         JPanel panelText = new JPanel(new GridLayout(2, 1));
         JPanel panelOptions = new JPanel(new GridLayout(2, 1));
 
-        pathOptionInput.setPreferredSize(new Dimension(100,50));
+        pathOptionInput.setPreferredSize(new Dimension(100, 50));
         pathOptionInput.setEditable(false);
         panelOptions.add(pathOptionLabel);
         panelOptions.add(pathOptionInput);
 
-        pathPatternInput.setPreferredSize(new Dimension(100,50));
+        pathPatternInput.setPreferredSize(new Dimension(100, 50));
         pathPatternInput.setEditable(false);
         panelPattern.add(pathPatternLabel);
         panelPattern.add(pathPatternInput);
-        pathTextInput.setPreferredSize(new Dimension(100,50));
+        pathTextInput.setPreferredSize(new Dimension(100, 50));
         pathTextInput.setEditable(false);
         panelText.add(pathTextLabel);
         panelText.add(pathTextInput);
@@ -198,12 +197,9 @@ public class MainWindow extends JFrame {
         container.add(panelVariable);
 
         container1.add(container, c);
-        //container1.setPreferredSize(new Dimension(500, 500));
         Container statisticPanel = new Container();
         statisticPanel.setLayout(new GridBagLayout());
 
-
-        //statisticPanel.setPreferredSize(new Dimension(this.getWidth()-40,500));
         c.weightx = 0.1;
         c.weighty = 0.1;
         c.anchor = GridBagConstraints.CENTER;
@@ -215,7 +211,7 @@ public class MainWindow extends JFrame {
         statisticPanel.add(new JScrollPane(statistics));
         statisticPanel.add(coeffUsedSortButton, c);
         statisticPanel.add(countUsedSortButton, c);
-        statisticPanel.add(groupSortButton,c);
+        statisticPanel.add(groupSortButton, c);
         container1.add(statisticPanel, c);
 
         ButtonGroup groupE = new ButtonGroup();
@@ -249,57 +245,58 @@ public class MainWindow extends JFrame {
                     int ret = fileopen.showDialog(null, "Открыть файл базы замен");
                     if (ret == JFileChooser.APPROVE_OPTION) {
                         File file = fileopen.getSelectedFile();
-                        try {
-                            data = new InputFile(file.toPath().toString());
-                        } catch (Throwable ex) {
-                            JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-
-                        }
+//                        try {
+//                            data = new InputFile(file.toPath().toString());
+//                        } catch (Throwable ex) {
+//                            JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//
+//                        }
                         pathPatternInput.setText(file.toPath().toString());
-                        int baseMinDis;
-                        int probMinDis;
-                        double probability;
-                        double randmindis;
-                        double randused;
-
-                        try {
-                            if (baseMinDisInput.getText().equals(""))
-                                baseMinDis = 0;
-                            else
-                                baseMinDis = Integer.parseInt(baseMinDisInput.getText());
-                            if (probMinDisInput.getText().equals(""))
-                                probMinDis = 0;
-                            else
-                                probMinDis = Integer.parseInt(baseMinDisInput.getText());
-                            if (probabilityInput.getText().equals(""))
-                                probability = 0;
-                            else if ((Double.parseDouble(probabilityInput.getText()) <= 1) && (Double.parseDouble(probabilityInput.getText()) >= 0))
-                                probability = Double.parseDouble(probabilityInput.getText());
-                            else
-                                throw new NumberFormatException();
-                            if (randMinDisInput.getText().equals(""))
-                                randmindis = 0;
-                            else
-                                randmindis = Double.parseDouble(randMinDisInput.getText());
-                            if (randUsedInput.getText().equals(""))
-                                randused = 0;
-                            else
-                                randused = Double.parseDouble(randUsedInput.getText());
-
-                            try {
-                                replaceBase = data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
-                            } catch (Throwable ex) {
-                                JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                            if (replaceBase != null) {
+                        patternpath = file.toPath().toString();
+//                        int baseMinDis;
+//                        int probMinDis;
+//                        double probability;
+//                        double randmindis;
+//                        double randused;
+//
+//                        try {
+//                            if (baseMinDisInput.getText().equals(""))
+//                                baseMinDis = 0;
+//                            else
+//                                baseMinDis = Integer.parseInt(baseMinDisInput.getText());
+//                            if (probMinDisInput.getText().equals(""))
+//                                probMinDis = 0;
+//                            else
+//                                probMinDis = Integer.parseInt(baseMinDisInput.getText());
+//                            if (probabilityInput.getText().equals(""))
+//                                probability = 0;
+//                            else if ((Double.parseDouble(probabilityInput.getText()) <= 1) && (Double.parseDouble(probabilityInput.getText()) >= 0))
+//                                probability = Double.parseDouble(probabilityInput.getText());
+//                            else
+//                                throw new NumberFormatException();
+//                            if (randMinDisInput.getText().equals(""))
+//                                randmindis = 0;
+//                            else
+//                                randmindis = Double.parseDouble(randMinDisInput.getText());
+//                            if (randUsedInput.getText().equals(""))
+//                                randused = 0;
+//                            else
+//                                randused = Double.parseDouble(randUsedInput.getText());
+//
+//                            try {
+//                                replaceBase = data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
+//                            } catch (Throwable ex) {
+//                                JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                            }
+//                            if (replaceBase != null) {
                                 openTextButton.setEnabled(true);
-                            }
-
-                        } catch (NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (Throwable exe) {
-                            JOptionPane.showMessageDialog(null, exe.getMessage() + " файла " + fileopen.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                        }
+//                            }
+//
+//                        } catch (NumberFormatException ex) {
+//                            JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                        } catch (Throwable exe) {
+//                            JOptionPane.showMessageDialog(null, exe.getMessage() + " файла " + fileopen.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                        }
                     }
                 }
         );
@@ -311,262 +308,350 @@ public class MainWindow extends JFrame {
             if (ret == JFileChooser.APPROVE_OPTION) {
                 File file = fileopen.getSelectedFile();
                 pathTextInput.setText(file.toPath().toString());
-                try {
-                    text = data.getPreparedText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
-                } catch (Throwable ex) {
-                    JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                }
+                textpath = file.toPath().toString();
+//                try {
+//                    text = data.getPreparedText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
+//                } catch (Throwable ex) {
+//                    JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                }
                 saveTextButton.setEnabled(true);
-                System.out.println(text);
+//                System.out.println(text);
             }
         });
 
         saveTextButton.addActionListener((e) -> {
-                    ChangeStr tmp = new ChangeStr();
-                    JFileChooser fc = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
-                    if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                        try (FileWriter fw = new FileWriter(fc.getSelectedFile())) {
-                            System.out.println(text);
+            ChangeStr tmp = new ChangeStr();
+            JFileChooser fc = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+            if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                try (FileWriter fw = new FileWriter(fc.getSelectedFile())) {
+                    //........................................................................
+                    replaceBase = null;
+                    text = null;
+                    boolean errs = false;
+                    int baseMinDis = 0;
+                    int probMinDis = 0;
+                    double probability = 0;
+                    double randmindis = 0;
+                    double randused = 0;
+                    try {
+                        baseMinDis = Integer.parseInt(baseMinDisInput.getText());
+                        probMinDis = Integer.parseInt(baseMinDisInput.getText());
+                         if ((Double.parseDouble(probabilityInput.getText()) <= 1) && (Double.parseDouble(probabilityInput.getText()) >= 0))
+                            probability = Double.parseDouble(probabilityInput.getText());
+                        else
+                            throw new NumberFormatException();
+                        randmindis = Double.parseDouble(randMinDisInput.getText());
+                        randused = Double.parseDouble(randUsedInput.getText());
+                    } catch (NumberFormatException ex) {
+                        errs = true;
+                        JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    if (errs != true) {
+                        if (patternpath != "" && errs != true) {
+                            File file = new File(patternpath);
+                            if (file.isDirectory()) {
+                                ArrayList<Replace> tmparr = new ArrayList<>();
+                                File[] filesInDir = file.listFiles();
+                                for (File f : filesInDir) {
+                                    if (f.getName().equals("options.txt")) {
+                                      optionspath = f.toPath().toString();
+                                      pathOptionInput.setText(f.toPath().toString());
+                                    } else {
+                                        try {
+                                            data = new InputFile(f.toPath().toString());
+                                            tmparr.addAll(Arrays.asList(data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused)));
+
+                                        } catch (Throwable exe) {
+                                            errs = true;
+                                            JOptionPane.showMessageDialog(null, exe.getMessage() + " файла " + f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+                                        }
+                                        if (errs)
+                                            break;
+
+                                        if (!errs) {
+                                            replaceBase = tmparr.toArray(new Replace[tmparr.size()]);
+                                            openTextButton.setEnabled(true);
+                                            for (int i = 0; i < replaceBase.length; i++)
+                                                System.out.println(replaceBase[i].replacement + " " + replaceBase[i].substitute + " приоритет: " + replaceBase[i].priority + " мин дис: " + replaceBase[i].minDis + " важность: " + replaceBase[i].importance + " " + replaceBase[i].coeffOfUsed);
+                                        }
+
+                                    }
+                                }
+                            } else {
+                                if (!errs) {
+                                    try {
+                                        data = new InputFile(file.toPath().toString());
+                                        replaceBase = data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
+                                    } catch (Throwable ex) {
+                                        JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+                                    }
+
+                                }
+                            }
+
+                        }
+                        if ((!errs)&& (optionspath != "")){
+                            try {
+                                veropropuskov = InputFile.loadOptions(optionspath);
+                                System.out.println(veropropuskov.keySet());
+                            } catch (Throwable exe) {
+                                JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }
+                        if (textpath != "" && !errs ) {
+                            File file = new File(textpath);
+                            try {
+                                text = data.getPreparedText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
+                            } catch (Throwable ex) {
+                                JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        }
+                        //.........................................................................
+                        System.out.println(text);
+                        if (!errs) {
                             groupCount = new HashMap<>();
-                            //fw.print(0xEF);
                             fw.write('\ufeff');
-                            //fw.write(0xBF);
                             for (int i = 0; i < text.size(); i++) {
-                                fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, groupCount, Integer.parseInt(groupVar.getSelection().getActionCommand())),Integer.parseInt(groupU.getSelection().getActionCommand()))+ System.lineSeparator());
+                                fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, groupCount, Integer.parseInt(groupVar.getSelection().getActionCommand())), Integer.parseInt(groupU.getSelection().getActionCommand())) + System.lineSeparator());
                             }
                             countUsedSortButton.setEnabled(true);
                             coeffUsedSortButton.setEnabled(true);
                             groupSortButton.setEnabled(true);
                             groupSort();
-                        } catch (IOException exe) {
-                            JOptionPane.showMessageDialog(null, "Ошибка в записи файла", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
-                }
-        );
-
-        openDirButton.addActionListener((e) -> {
-                    replaceBase = null;
-                    boolean errs = false;
-                    int baseMinDis;
-                    int probMinDis;
-                    double probability;
-                    double randmindis;
-                    double randused;
-
-                    JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
-                    fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                    int ret = fileopen.showDialog(null, "Открыть папку с базами замен");
-                    if (ret == JFileChooser.APPROVE_OPTION) {
-                        File folder = fileopen.getSelectedFile();
-                        pathPatternInput.setText(folder.toPath().toString());
-                        if (folder.isDirectory()) {
-                            ArrayList<Replace> tmparr = new ArrayList<>();
-                            File[] filesInDir = folder.listFiles();
-                            for (File f : filesInDir) {
-                                if (f.getName().equals("options.txt")) {
-                                    try {
-                                        veropropuskov = InputFile.loadOptions(f.toPath().toString());
-                                        System.out.println(veropropuskov.keySet());
-                                    } catch (Throwable exe) {
-                                        JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                                    }
-                                } else {
-                                    try {
-                                        if (baseMinDisInput.getText().equals(""))
-                                            baseMinDis = 0;
-                                        else
-                                            baseMinDis = Integer.parseInt(baseMinDisInput.getText());
-                                        if (probMinDisInput.getText().equals(""))
-                                            probMinDis = 0;
-                                        else
-                                            probMinDis = Integer.parseInt(baseMinDisInput.getText());
-                                        if (probabilityInput.getText().equals(""))
-                                            probability = 0;
-                                        else if ((Double.parseDouble(probabilityInput.getText()) <= 1) && (Double.parseDouble(probabilityInput.getText()) >= 0))
-                                            probability = Double.parseDouble(probabilityInput.getText());
-                                        else
-                                            throw new NumberFormatException();
-                                        if (randMinDisInput.getText().equals(""))
-                                            randmindis = 0;
-                                        else
-                                            randmindis = Double.parseDouble(randMinDisInput.getText());
-                                        if (randUsedInput.getText().equals(""))
-                                            randused = 0;
-                                        else
-                                            randused = Double.parseDouble(randUsedInput.getText());
-
-                                        data = new InputFile(f.toPath().toString());
-                                        try {
-                                            tmparr.addAll(Arrays.asList(data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused)));
-                                        } catch (Throwable ex) {
-                                            JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                                            errs = true;
-                                        }
-                                    } catch (NumberFormatException ex) {
-                                        errs = true;
-                                        JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                                    } catch (Throwable exe) {
-                                        errs = true;
-                                        JOptionPane.showMessageDialog(null, exe.getMessage() + " файла " + f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                                    }
-                                    if (errs)
-                                        break;
-
-                                    if (!errs) {
-                                        replaceBase = tmparr.toArray(new Replace[tmparr.size()]);
-                                        openTextButton.setEnabled(true);
-                                        for (int i = 0; i < replaceBase.length; i++)
-                                            System.out.println(replaceBase[i].replacement + " " + replaceBase[i].substitute + " приоритет: " + replaceBase[i].priority + " мин дис: " + replaceBase[i].minDis + " важность: " + replaceBase[i].importance + " " + replaceBase[i].coeffOfUsed);
-                                    }
-                                }
-                            }
-                        }
+                    } catch(IOException exe_){
+                        JOptionPane.showMessageDialog(null, "Ошибка в записи файла", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                     }
-                }
-        );
-
-        helpButton.addActionListener((e) -> {
-                    Help w = new Help();
-                    w.setVisible(true);
-                }
-        );
-
-        optionsButton.addActionListener((e) -> {
-            JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
-            int ret = fileopen.showDialog(null, "Открыть options");
-            if (ret == JFileChooser.APPROVE_OPTION) {
-                File file = fileopen.getSelectedFile();
-                pathOptionInput.setText(file.toPath().toString());
-                try {
-                    veropropuskov = InputFile.loadOptions(file.toPath().toString());
-                } catch (Throwable exe) {
-                    JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
-        });
-
-        coeffUsedSortButton.addActionListener((e) -> {
-                    GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
-                    StringBuilder tmpStr = new StringBuilder();
-                    for (int i = 0; i < groupCount.size(); i++) {
-                        groups[i] = new GroupReplaces(replaceBase, groupCount, i);
-                    }
-
-                    for (int i = 0; i < groupCount.size(); i++) {
-                        Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCoef(o1, o2));
-                        tmpStr.append(groups[i].printC() + "\n");
-                    }
-
-                    statistics.setText(tmpStr.toString());
-                }
         );
 
-        countUsedSortButton.addActionListener((e) -> {
-                    GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
-                    StringBuilder tmpStr = new StringBuilder();
-                    for (int i = 0; i < groupCount.size(); i++) {
-                        groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+            openDirButton.addActionListener((e) -> {
+//                        replaceBase = null;
+//                        boolean errs = false;
+//                        int baseMinDis;
+//                        int probMinDis;
+//                        double probability;
+//                        double randmindis;
+//                        double randused;
+
+                        JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+                        fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        int ret = fileopen.showDialog(null, "Открыть папку с базами замен");
+                        if (ret == JFileChooser.APPROVE_OPTION) {
+                            File folder = fileopen.getSelectedFile();
+                            pathPatternInput.setText(folder.toPath().toString());
+                            patternpath = folder.toPath().toString();
+//                            if (folder.isDirectory()) {
+//                                ArrayList<Replace> tmparr = new ArrayList<>();
+//                                File[] filesInDir = folder.listFiles();
+//                                for (File f : filesInDir) {
+//                                    if (f.getName().equals("options.txt")) {
+//                                        try {
+//                                            veropropuskov = InputFile.loadOptions(f.toPath().toString());
+//                                            System.out.println(veropropuskov.keySet());
+//                                        } catch (Throwable exe) {
+//                                            JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                                        }
+//                                    } else {
+//                                        try {
+//                                            if (baseMinDisInput.getText().equals(""))
+//                                                baseMinDis = 0;
+//                                            else
+//                                                baseMinDis = Integer.parseInt(baseMinDisInput.getText());
+//                                            if (probMinDisInput.getText().equals(""))
+//                                                probMinDis = 0;
+//                                            else
+//                                                probMinDis = Integer.parseInt(baseMinDisInput.getText());
+//                                            if (probabilityInput.getText().equals(""))
+//                                                probability = 0;
+//                                            else if ((Double.parseDouble(probabilityInput.getText()) <= 1) && (Double.parseDouble(probabilityInput.getText()) >= 0))
+//                                                probability = Double.parseDouble(probabilityInput.getText());
+//                                            else
+//                                                throw new NumberFormatException();
+//                                            if (randMinDisInput.getText().equals(""))
+//                                                randmindis = 0;
+//                                            else
+//                                                randmindis = Double.parseDouble(randMinDisInput.getText());
+//                                            if (randUsedInput.getText().equals(""))
+//                                                randused = 0;
+//                                            else
+//                                                randused = Double.parseDouble(randUsedInput.getText());
+//
+//                                            data = new InputFile(f.toPath().toString());
+//                                            try {
+//                                                tmparr.addAll(Arrays.asList(data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused)));
+//                                            } catch (Throwable ex) {
+//                                                JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                                                errs = true;
+//                                            }
+//                                        } catch (NumberFormatException ex) {
+//                                            errs = true;
+//                                            JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                                        } catch (Throwable exe) {
+//                                            errs = true;
+//                                            JOptionPane.showMessageDialog(null, exe.getMessage() + " файла " + f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                                        }
+//                                        if (errs)
+//                                            break;
+//
+//                                        if (!errs) {
+//                                            replaceBase = tmparr.toArray(new Replace[tmparr.size()]);
+//                                            openTextButton.setEnabled(true);
+//                                            for (int i = 0; i < replaceBase.length; i++)
+//                                                System.out.println(replaceBase[i].replacement + " " + replaceBase[i].substitute + " приоритет: " + replaceBase[i].priority + " мин дис: " + replaceBase[i].minDis + " важность: " + replaceBase[i].importance + " " + replaceBase[i].coeffOfUsed);
+//                                        }
+//                                    }
+//                                }
+//                            }
+                        }
                     }
+            );
 
-                    for (int i = 0; i < groupCount.size(); i++) {
-                        Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCount(o1, o2));
-                        tmpStr.append(groups[i].print() + "\n");
+            helpButton.addActionListener((e) -> {
+                        Help w = new Help();
+                        w.setVisible(true);
                     }
+            );
 
-                    statistics.setText(tmpStr.toString());
+            optionsButton.addActionListener((e) -> {
+                JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+                int ret = fileopen.showDialog(null, "Открыть options");
+                if (ret == JFileChooser.APPROVE_OPTION) {
+                    File file = fileopen.getSelectedFile();
+                    pathOptionInput.setText(file.toPath().toString());
+                    optionspath = file.toPath().toString();
+//                    try {
+//                        veropropuskov = InputFile.loadOptions(file.toPath().toString());
+//                    } catch (Throwable exe) {
+//                        JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+//                    }
                 }
-        );
+            });
 
-        groupSortButton.addActionListener((e) ->{
-            groupSort();
-        });
-    }
+            coeffUsedSortButton.addActionListener((e) -> {
+                        GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+                        StringBuilder tmpStr = new StringBuilder();
+                        for (int i = 0; i < groupCount.size(); i++) {
+                            groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+                        }
 
-    public void groupSort(){
-        GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
-        StringBuilder tmpStr = new StringBuilder();
-        for (int i = 0; i < groupCount.size(); i++) {
-            groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+                        for (int i = 0; i < groupCount.size(); i++) {
+                            Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCoef(o1, o2));
+                            tmpStr.append(groups[i].printC() + "\n");
+                        }
+
+                        statistics.setText(tmpStr.toString());
+                    }
+            );
+
+            countUsedSortButton.addActionListener((e) -> {
+                        GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+                        StringBuilder tmpStr = new StringBuilder();
+                        for (int i = 0; i < groupCount.size(); i++) {
+                            groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+                        }
+
+                        for (int i = 0; i < groupCount.size(); i++) {
+                            Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCount(o1, o2));
+                            tmpStr.append(groups[i].print() + "\n");
+                        }
+
+                        statistics.setText(tmpStr.toString());
+                    }
+            );
+
+            groupSortButton.addActionListener((e) -> {
+                groupSort();
+            });
         }
 
-        Arrays.sort(groups, (o1, o2) -> compareGroup(o1, o2));
+        public void groupSort () {
+            GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
+            StringBuilder tmpStr = new StringBuilder();
+            for (int i = 0; i < groupCount.size(); i++) {
+                groups[i] = new GroupReplaces(replaceBase, groupCount, i);
+            }
 
-        for (int i = 0; i < groupCount.size(); i++) {
-            tmpStr.append(groups[i].printG() + "\n");
+            Arrays.sort(groups, (o1, o2) -> compareGroup(o1, o2));
+
+            for (int i = 0; i < groupCount.size(); i++) {
+                tmpStr.append(groups[i].printG() + "\n");
+            }
+
+            statistics.setText(tmpStr.toString());
         }
+        public String ahaCorasickText (String text, Replace[]replaces, Map < Integer, Integer > groupCount,int mark){
+            AhoCorasick ahoCorasick = new AhoCorasick();
+            for (int k = 0; k < replaces.length; k++) {
+                ahoCorasick.addToBohr(replaces[k].replacement);
+            }
+            String[] words = text.split(" ");
+            StringBuilder res = new StringBuilder();
+            Pattern pattern = Pattern.compile("[а-яА-ЯёЁ]");
+            for (int i = 0; i < words.length; i++) {
+                Matcher matcher = pattern.matcher(words[i]);
+                if (matcher.find()) {
+                    HundlerWord hw = new HundlerWord(words[i], replaces, groupCount, mark);
+                    ahoCorasick.findInd(words[i].toLowerCase(), hw);
 
-        statistics.setText(tmpStr.toString());
-    }
-    public String ahaCorasickText(String text, Replace[] replaces, Map<Integer, Integer> groupCount, int mark) {
-        AhoCorasick ahoCorasick = new AhoCorasick();
-        for (int k = 0; k < replaces.length; k++) {
-            ahoCorasick.addToBohr(replaces[k].replacement);
-        }
-        String[] words = text.split(" ");
-        StringBuilder res = new StringBuilder();
-        Pattern pattern = Pattern.compile("[а-яА-ЯёЁ]");
-        for (int i = 0; i < words.length; i++) {
-            Matcher matcher = pattern.matcher(words[i]);
-            if (matcher.find()) {
-                HundlerWord hw = new HundlerWord(words[i], replaces, groupCount, mark);
-                ahoCorasick.findInd(words[i].toLowerCase(), hw);
-
-                for (String key : hw.indexes.keySet()) {
-                    Collections.shuffle(hw.indexes.get(key));
-                }
-
-                if (veropropuskov != null) {
-                    // вычеркиваем некоторые найденные фрагменты
                     for (String key : hw.indexes.keySet()) {
-                        if (veropropuskov.containsKey(key) && veropropuskov.get(key) > 0) {
-                            int lenInd = hw.indexes.get(key).size();
-                            for (int j = 0; j < lenInd; j++) {
-                                if (HundlerWord.experiment(veropropuskov.get(key))) {
-                                    hw.indexes.get(key).remove(0);
+                        Collections.shuffle(hw.indexes.get(key));
+                    }
+
+                    if (veropropuskov != null) {
+                        // вычеркиваем некоторые найденные фрагменты
+                        for (String key : hw.indexes.keySet()) {
+                            if (veropropuskov.containsKey(key) && veropropuskov.get(key) > 0) {
+                                int lenInd = hw.indexes.get(key).size();
+                                for (int j = 0; j < lenInd; j++) {
+                                    if (HundlerWord.experiment(veropropuskov.get(key))) {
+                                        hw.indexes.get(key).remove(0);
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
 
-                // Добавление измененного слова в результат
-                res.append(hw.launch() + " ");
+                    // Добавление измененного слова в результат
+                    res.append(hw.launch() + " ");
+                } else if (words[i].equals(""))
+                    res.append(" ");
+                else
+                    res.append(words[i] + " ");
+
             }
-            else if (words[i].equals(""))
-                res.append(" ");
-            else
-                res.append(words[i]+" ");
 
+            return res.toString();
         }
 
-        return res.toString();
-    }
+        public static int compareCoef (Replace o1, Replace o2){
+            if (Math.abs(o2.coeffOfUsed - o1.coeffOfUsed) < 0.00001) {
+                return 0;
+            } else {
+                if (o1.coeffOfUsed < o2.coeffOfUsed) return -1;
+                else return 1;
+            }
+        }
 
-    public static int compareCoef(Replace o1, Replace o2) {
-        if (Math.abs(o2.coeffOfUsed - o1.coeffOfUsed) < 0.00001) {
-            return 0;
-        } else {
-            if (o1.coeffOfUsed < o2.coeffOfUsed) return -1;
-            else return 1;
+        public static int compareCount (Replace o1, Replace o2){
+            return ((o2.countGood == o1.countGood) ?
+
+                    ((o1.countBad == o2.countBad) ?
+
+                            ((o2.countFake == o1.countFake) ? 0 : (o2.countFake - o1.countFake))
+
+                            : (o2.countBad - o1.countBad))
+
+                    : (o2.countGood - o1.countGood));
+        }
+        public static int compareIntReverse ( int o1, int o2){
+            return o1 - o2;
+        }
+
+        public static int compareGroup (GroupReplaces o1, GroupReplaces o2){
+            return o2.countRep - o1.countRep;
         }
     }
-
-    public static int compareCount(Replace o1, Replace o2) {
-        return ((o2.countGood == o1.countGood) ?
-
-                ((o1.countBad == o2.countBad) ?
-
-                        ((o2.countFake == o1.countFake) ? 0 : (o2.countFake - o1.countFake))
-
-                        : (o2.countBad - o1.countBad))
-
-                : (o2.countGood - o1.countGood));
-    }
-    public static int compareIntReverse(int o1, int o2) {
-        return o1 - o2;
-    }
-
-    public static int compareGroup(GroupReplaces o1, GroupReplaces o2) {return o2.countRep - o1.countRep;}
-}

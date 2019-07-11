@@ -48,13 +48,13 @@ public class InputFile {
         Replace[] replaceBase1 = new Replace[1];
         ArrayList<Replace> replaceBase = new ArrayList<>();
         Integer[] masgroup = new Integer[forChange.size()];
-        int tmpgroup = 0;
+        int tmpgroup = 1;
         int j = 0;
         masgroup[0] = 0;
         for (int i = 0; i < forChange.size(); i++) {
             if (forChange.get(i).equals("")) {
-                tmpgroup++;
                 masgroup[tmpgroup] = i - j;
+                tmpgroup++;
                 j++;
             } else {
                 replaceBase.add(new Replace(coeffa, coeffb, forChange.get(i), baseMinDis, propMinDis, modifyU, i - j, probability, randmindis, randUsed, tmpgroup));
@@ -65,19 +65,24 @@ public class InputFile {
             }
         }
         for (int i = 0; i < replaceBase.size(); i++) {
-            if (replaceBase.get(i).childsInt != null)
+            if (replaceBase.get(i).childsInt != null) {
                 // добавление всeх в ckild из группы
 //                if (replaceBase.get(i).childsInt.contains(0)) {
 //
 //                }
                 //
-//                if (replaceBase.get(i).childsInt.contains(0))
-//                    for (int z = 0;z<masgroup[replaceBase.get(i).group-masgroup[replaceBase.get(i).group-1]];z++)
-//                        replaceBase.get(i).childsRep.add(replaceBase.get(z + masgroup[replaceBase.get(i).group-1]));
+                if ((replaceBase.get(i).childsInt.contains(0))) {
+                    int g = masgroup[replaceBase.get(i).group - masgroup[replaceBase.get(i).group - 1]];
+                    for (int z = 0; z < g; z++) {
+                        if (z + masgroup[replaceBase.get(i).group - 1] != i)
+                            replaceBase.get(i).childsRep.add(replaceBase.get(z + masgroup[replaceBase.get(i).group - 1]));
+                    }
+                }
+                else
                 for (int k = 0; k < replaceBase.get(i).childsInt.size(); k++) {
                     try {
-                        if ((replaceBase.get(i).childsInt.get(k) < replaceBase.size()) && (replaceBase.get(i).childsInt.get(k) != null)) {
-                            replaceBase.get(i).childsRep.add(replaceBase.get(replaceBase.get(i).childsInt.get(k) + masgroup[replaceBase.get(i).group]));
+                        if ((replaceBase.get(i).childsInt.get(k) != null) && (replaceBase.get(i).childsInt.get(k)-1 < replaceBase.size())) {
+                            replaceBase.get(i).childsRep.add(replaceBase.get(replaceBase.get(i).childsInt.get(k) -1 + masgroup[replaceBase.get(i).group-1]));
                         }
                     } catch (Exception exe) {
                         Throwable ee = new Exception("Ошибка ввода в строке " + (i + 1));
@@ -85,7 +90,8 @@ public class InputFile {
                     }
 
                 }
-            System.out.println(replaceBase.get(i).replacement + " childsInt:" + replaceBase.get(i).childsRep);
+                System.out.println(replaceBase.get(i).replacement + " childsRep:" + replaceBase.get(i).childsRep);
+            }
         }
         replaceBase1 = replaceBase.toArray(replaceBase1);
         return replaceBase1;
