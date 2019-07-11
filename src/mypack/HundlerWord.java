@@ -6,7 +6,7 @@ import java.util.*;
 public class HundlerWord {
     private String word;
     public Map<String, List<Integer>> indexes;
-    public Map<String, List<Integer>> indexesToAdd;
+    public Map<Integer, List<Integer>> indexesToAdd;
 
     private boolean[] blocksL;
     private boolean[] blocksIm;
@@ -29,6 +29,10 @@ public class HundlerWord {
         Arrays.fill(blocksL, false);
         blocksIm = new boolean[word.length()];
         Arrays.fill(blocksL, false);
+
+        for (Replace replace : replaces) {
+            if (!groupCount.containsKey(replace.group)) groupCount.put(replace.group, 0);
+        }
 
         if (mark == 0) d = "i";
         else {
@@ -105,12 +109,12 @@ public class HundlerWord {
                         }
 
                         //иначе добавляем в Мар идексов для замен
-                        if (indexesToAdd.containsKey(replaces[i].replacement)) {
-                            indexesToAdd.get(replaces[i].replacement).add(index);
+                        if (indexesToAdd.containsKey(replaces[i].ID)) {
+                            indexesToAdd.get(replaces[i].ID).add(index);
                         } else {
                             List<Integer> r = new ArrayList<>();
                             r.add(index);
-                            indexesToAdd.put(replaces[i].replacement, r);
+                            indexesToAdd.put(replaces[i].ID, r);
                         }
 
                         //блокируем буквы с index по index + replace.len'
@@ -124,13 +128,7 @@ public class HundlerWord {
                         replaces[i].incCoeffOfUsed();
                         replaces[i].repBlock(indexes); //блокировка на мин. дис.
                         //счетчик групп
-                        if (groupCount.containsKey(replaces[i].group)) groupCount.put(replaces[i].group, groupCount.get(replaces[i].group)+1);
-                        else groupCount.put(replaces[i].group, 1);
-                        for (int key : groupCount.keySet()) {
-                            for (int k = 0; k < key; k++) {
-                                if (!groupCount.containsKey(k)) groupCount.put(k, 0);
-                            }
-                        }
+                        groupCount.put(replaces[i].group, groupCount.get(replaces[i].group) + 1);
 
                         //проверяем список подчинённых записей
                         if (replaces[i].childsRep.size() > 0) {
@@ -149,10 +147,24 @@ public class HundlerWord {
                         replaces[i].incCountBad(1);
                     }
 
+                } else {
+                    List<Replace> check = new ArrayList<>();
+                    for (Replace replace : replaces) {
+                        if (replace.replacement.equals(replaces[i].replacement)) {
+                            check.add(replace);
+                        }
+                    }
+                    if (check.size() >  1) {
+                        int j = i+1;
+                        while (j < replaces.length && !replaces[j].replacement.equals(replaces[i].replacement)) j++;
+                        i = j;
+                        continue;
+                    }
                 }
+
                 //убираем из indexes вхождение
-                indexes.get(replaces[i].replacement).remove(0);
-                if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
+                    indexes.get(replaces[i].replacement).remove(0);
+                    if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
 
                 //сортируем по приоритету и приравневаем указатель на замену к 1 замене
                 Arrays.sort(replaces,(o1, o2)-> compare(o1,o2));
@@ -165,6 +177,7 @@ public class HundlerWord {
         for (Replace replace : replaces) {
             if (replace.countBlock != 0) {
                 replace.decCountBlock();
+                replace.indexesB.clear();
             }
         }
 
@@ -174,7 +187,7 @@ public class HundlerWord {
         //лист allInds - массив всех индексов вхождений замен отсортированый по возрастанию
 
         List<Integer> allInds = new ArrayList<>();
-        for (String key : indexesToAdd.keySet()) {
+        for (int key : indexesToAdd.keySet()) {
             allInds.addAll(indexesToAdd.get(key));
         }
         Collections.sort(allInds, (o1, o2) -> compareDec(o1, o2));
@@ -193,53 +206,53 @@ public class HundlerWord {
                 else ww.append(word.charAt(j));
                 j++;
             } else {
-                for (String key : indexesToAdd.keySet()) {
+                for (int key : indexesToAdd.keySet()) {
 
                     if (indexesToAdd.get(key).contains(j)) {
 
+                        Replace r = replaces[0];
+                        for (Replace replace : replaces) { // находим по id replace
+                            if (replace.ID == key) {
+                                r = replace;
+                            }
+                        }
+
                         StringBuffer strForCompare = new StringBuffer();
-                        while (!strForCompare.toString().toLowerCase().equals(key.toLowerCase()) && j < word.length()) {
+                        while (!strForCompare.toString().toLowerCase().equals(r.replacement.toLowerCase()) && j < word.length()) {
                             if (word.charAt(j) != '$' && word.charAt(j) != '&') strForCompare.append(word.charAt(j));
                             j++;
                         }
 
-                        for (Replace replace : replaces) {
-                            if (key.equals(replace.replacement)) {
-                                Random rand = new Random(System.nanoTime());
-                                int ranNum = (int) (rand.nextDouble() * replace.substitute.size() );
+                        Random rand = new Random(System.nanoTime());
+                        int ranNum = (int) (rand.nextDouble() * r.substitute.size() );
 
-                                if (!d.equals("i")) {
-                                    if (replace.substitute.get(ranNum).charAt(0) == '/' || replace.substitute.get(ranNum).charAt(0) == '\\')
-                                        ww = ww.append(replace.substitute.get(ranNum));
-                                    else ww = ww.append(d + replace.substitute.get(ranNum));
+                        if (!d.equals("i")) {
+                            if (r.substitute.get(ranNum).charAt(0) == '/' || r.substitute.get(ranNum).charAt(0) == '\\')
+                                ww = ww.append(r.substitute.get(ranNum));
+                            else ww = ww.append(d + r.substitute.get(ranNum));
 
-                                    int number = (int) ( Math.random() * 2 );
-                                    if (number == 0) d = "/";
-                                    else d = "\\";
-                                } else {
-                                    if (ww.length() != 0) {
-                                        char x = ww.toString().charAt(ww.length()-1);
-                                        if (x == '$' || x == '&') {
-                                            if (ww.length() > 1) x = ww.toString().charAt(ww.length()-2);
-                                            else x = 'а';
-                                        }
-
-                                        if (myIsLetter(x) && x != 'i')
-                                            ww = ww.append(replace.substitute.get(ranNum));
-                                        else ww = ww.append(d + replace.substitute.get(ranNum));
-
-                                    } else {
-                                        ww = ww.append(replace.substitute.get(ranNum));
-                                    }
+                            int number = (int) ( Math.random() * 2 );
+                            if (number == 0) d = "/";
+                            else d = "\\";
+                        } else {
+                            if (ww.length() != 0) {
+                                char x = ww.toString().charAt(ww.length()-1);
+                                if (x == '$' || x == '&') {
+                                    if (ww.length() > 1) x = ww.toString().charAt(ww.length()-2);
+                                    else x = 'а';
                                 }
 
-                                break;
+                                if (myIsLetter(x) && x != 'i')
+                                    ww = ww.append(r.substitute.get(ranNum));
+                                else ww = ww.append(d + r.substitute.get(ranNum));
+
+                            } else {
+                                ww = ww.append(r.substitute.get(ranNum));
                             }
                         }
                     }
                 }
             }
-
         }
 
 

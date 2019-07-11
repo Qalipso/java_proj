@@ -27,19 +27,27 @@ public class Replace {
     public int countFake;
 
     public int errors = -1;
-    public boolean hundlered = false;
+    List<Integer> indexesB;
+
+    public static int saveID = 0;
+    public int ID;
 
     public int group;
+    public String file;
     public ArrayList<Integer> childsInt; /* используется только для заполнения childStr*/
     public ArrayList<Replace> childsRep;
 
-    public Replace(double priorityCoeff, double minDisCoeff, String str, int baseMinDis, int propMinDis, int modifyU, int k, double probability, double randmindis, double randUsed, int group_) {
+    public Replace(double priorityCoeff, double minDisCoeff, String str, int baseMinDis, int propMinDis, int modifyU, int k, double probability, double randmindis, double randUsed, int group_, String nameFile) {
         chanceBlock = probability;
         coeffOfRan = randUsed;
+        file = nameFile;
         coeffOfRandMinDis = randmindis;
         group = group_;
+        saveID++;
+        ID = saveID;
         childsRep = new ArrayList<>();
         substitute = new ArrayList<>();
+        indexesB = new ArrayList<>();
         ChangeStr tmp = new ChangeStr();
         StringBuilder buildStr = new StringBuilder();
         buildStr.append(str);
@@ -157,7 +165,7 @@ public class Replace {
         rand.setSeed(System.nanoTime());
         double ranNumber = (rand.nextDouble() * coeffOfRandMinDis * 2) - coeffOfRandMinDis;
 
-        countBlock = (int) Math.round( minDis * (1 + ranNumber) );
+        countBlock = (int)Math.abs(Math.round( minDis * (1 + ranNumber) ));
     }
 
     public void blockChild() {
