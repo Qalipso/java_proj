@@ -47,6 +47,7 @@ public class MainWindow extends JFrame {
     private JRadioButton e3radio = new JRadioButton("е интерпретируются с условиями");
     private JRadioButton u1radio = new JRadioButton("без особенностей");
     private JRadioButton u2radio = new JRadioButton("обработка ё,ю,я как йо,йу,йа");
+    private JRadioButton u3radio = new JRadioButton("обработка ё,ю,я как йо,йу,йа c условиями");
     private JRadioButton zi1radio = new JRadioButton("без особенностей");
     private JRadioButton zi2radio = new JRadioButton("цы интерпретируются как ци");
     private JRadioButton variant1radio = new JRadioButton("без особенностей");
@@ -85,6 +86,7 @@ public class MainWindow extends JFrame {
         e3radio.setActionCommand("2");
         u1radio.setActionCommand("0");
         u2radio.setActionCommand("1");
+        u3radio.setActionCommand("2");
         zi1radio.setActionCommand("0");
         zi2radio.setActionCommand("1");
         variant1radio.setActionCommand("0");
@@ -129,10 +131,11 @@ public class MainWindow extends JFrame {
         panelE.add(e2radio);
         panelE.add(e3radio);
 
-        JPanel panelU = new JPanel(new GridLayout(3, 1));
+        JPanel panelU = new JPanel(new GridLayout(4, 1));
         panelU.add(modifyULabel);
         panelU.add(u1radio);
         panelU.add(u2radio);
+        panelU.add(u3radio);
 
         JPanel panelZi = new JPanel(new GridLayout(3, 1));
         panelZi.add(modifyZiLabel);
@@ -230,6 +233,7 @@ public class MainWindow extends JFrame {
         ButtonGroup groupU = new ButtonGroup();
         groupU.add(u1radio);
         groupU.add(u2radio);
+        groupU.add(u3radio);
 
         u2radio.setSelected(true);
 

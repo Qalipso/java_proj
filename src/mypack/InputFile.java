@@ -139,7 +139,7 @@ public class InputFile {
                 buildStr.append(tmp.modSpecial(strLine+" "));
                 buildStr.replace(0, buildStr.toString().length(), tmp.modE(buildStr.toString(),modifyE));
                 if (modifyU != 0)
-                    buildStr.replace(0, buildStr.toString().length(), tmp.modU(buildStr.toString()));
+                    buildStr.replace(0, buildStr.toString().length(), tmp.modU(buildStr.toString(),modifyU));
                 if (modifyZi != 0)
                     buildStr.replace(0, buildStr.toString().length(), tmp.modZi(buildStr.toString()));
 

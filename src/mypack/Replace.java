@@ -68,8 +68,8 @@ public class Replace {
                 }
                 if (substr.get(0).equals("") || substr.get(1).equals("") || substr.get(2).equals("") || substr.get(0).indexOf(' ') != -1 || substr.get(1).indexOf(' ') != -1)
                     errors = k;
-                if (modifyU == 1)
-                    replacement = tmp.modU(substr.get(0));
+                if (modifyU != 0)
+                    replacement = tmp.modU(substr.get(0),modifyU);
                 else
                     replacement = substr.get(0);
                 substitute.add(substr.get(1));

@@ -93,29 +93,36 @@ return tmpStr.toString();
         return tmpStr.toString();
     }
 
-    public String modU(String str) {
+    public String modU(String str, int modifyU) {
         StringBuilder tmpStr = new StringBuilder();
         //tmpStr.append(str.charAt(0));
-        for (int i = 0; i < str.length(); i++) {
-            if (i < str.length() - 1 && (str.charAt(i) == 'й') && ((str.charAt(i + 1) == 'а') || (str.charAt(i + 1) == 'у') || (str.charAt(i + 1) == 'о'))) {
-                tmpStr.append("й$");
-            } else if (i < str.length() - 1 && (str.charAt(i) == 'Й') && ((str.charAt(i + 1) == 'А') || (str.charAt(i + 1) == 'У') || (str.charAt(i + 1) == 'О'))) {
-                tmpStr.append("Й$");
-            } else if (str.charAt(i) == 'я') {
-                tmpStr.append("йа");
-            } else if (str.charAt(i) == 'Я') {
-                tmpStr.append("ЙА");
-            } else if (str.charAt(i) == 'ю') {
-                tmpStr.append("йу");
-            } else if (str.charAt(i) == 'Ю') {
-                tmpStr.append("ЙУ");
-            } else if (str.charAt(i) == 'ё') {
-                tmpStr.append("йо");
-            } else if (str.charAt(i) == 'Ё') {
-                tmpStr.append("ЙО");
-            } else {
-                tmpStr.append(str.charAt(i));
+        if (modifyU == 1) {
+            for (int i = 0; i < str.length(); i++) {
+                if (i < str.length() - 1 && (str.charAt(i) == 'й') && ((str.charAt(i + 1) == 'а') || (str.charAt(i + 1) == 'у') || (str.charAt(i + 1) == 'о'))) {
+                    tmpStr.append("й$");
+                } else if (i < str.length() - 1 && (str.charAt(i) == 'Й') && ((str.charAt(i + 1) == 'А') || (str.charAt(i + 1) == 'У') || (str.charAt(i + 1) == 'О'))) {
+                    tmpStr.append("Й$");
+                } else if (str.charAt(i) == 'я') {
+                    tmpStr.append("йа");
+                } else if (str.charAt(i) == 'Я') {
+                    tmpStr.append("ЙА");
+                } else if (str.charAt(i) == 'ю') {
+                    tmpStr.append("йу");
+                } else if (str.charAt(i) == 'Ю') {
+                    tmpStr.append("ЙУ");
+                } else if (str.charAt(i) == 'ё') {
+                    tmpStr.append("йо");
+                } else if (str.charAt(i) == 'Ё') {
+                    tmpStr.append("ЙО");
+                } else {
+                    tmpStr.append(str.charAt(i));
+                }
             }
+        }
+        else if (modifyU == 2){
+            /*
+            е с условиями
+             */
         }
         return tmpStr.toString();
     }
