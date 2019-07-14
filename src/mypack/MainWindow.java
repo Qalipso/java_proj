@@ -60,7 +60,7 @@ public class MainWindow extends JFrame {
     private JLabel pathPatternLabel = new JLabel("База замен:");
     private JLabel pathTextLabel = new JLabel("Текст:");
     private JLabel pathOptionLabel = new JLabel("Options:");
-
+    private JCheckBox modJCheck = new JCheckBox("Блокировать замены после ъ");
     private JTextField pathPatternInput = new JTextField("");
     private JTextField pathTextInput = new JTextField("");
     private JTextField pathOptionInput = new JTextField("");
@@ -71,7 +71,6 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
         super("Кандзизатор");
-        //System.out.println();
         this.setBounds(100, 100, 950, 750);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pathTextInput.setBackground(new Color(255, 255, 100));
@@ -98,9 +97,9 @@ public class MainWindow extends JFrame {
         toolBar.add(openPatternButton);
         toolBar.add(openDirButton);
         toolBar.add(optionsButton);
-        toolBar.add(new Label("   "));
+        toolBar.add(new Label(" "));
         toolBar.add(openTextButton);
-        toolBar.add(new Label("   "));
+        toolBar.add(new Label(" "));
         toolBar.add(saveTextButton);
         toolBar.add(helpButton);
         toolBar.setPreferredSize(new Dimension(this.getWidth() - 20, 50));
@@ -112,7 +111,6 @@ public class MainWindow extends JFrame {
         c.fill = GridBagConstraints.BOTH;
         c.gridheight = 1;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        // c.gridx = GridBagConstraints.RELATIVE;
         c.gridx = 0;
         c.gridy = GridBagConstraints.RELATIVE;
         c.insets = new Insets(0, 0, 0, 0);
@@ -177,12 +175,7 @@ public class MainWindow extends JFrame {
         JPanel panelOptions = new JPanel(new GridLayout(2, 1));
 
         pathOptionInput.setPreferredSize(new Dimension(100, 50));
-        // pathOptionInput.setEditable(false);
-        pathOptionInput.addCaretListener(new CaretListener() {
-            public void caretUpdate(CaretEvent e) {
-                optionspath = pathOptionInput.getText();
-            }
-        });
+        pathOptionInput.addCaretListener((e) -> optionspath = pathOptionInput.getText());
         panelOptions.add(pathOptionLabel);
         panelOptions.add(pathOptionInput);
 
@@ -206,7 +199,7 @@ public class MainWindow extends JFrame {
         container.add(panelU);
         container.add(panelZi);
         container.add(panelVariable);
-
+        container.add(modJCheck);
         container1.add(container, c);
         Container statisticPanel = new Container();
         statisticPanel.setLayout(new GridBagLayout());
@@ -218,7 +211,6 @@ public class MainWindow extends JFrame {
         c.gridheight = 2;
         statisticPanel.add(statistics, c);
         c.gridheight = 1;
-        //statistics.setPreferredSize(new Dimension(this.getWidth()-40,500));
         statisticPanel.add(new JScrollPane(statistics));
         statisticPanel.add(coeffUsedSortButton, c);
         statisticPanel.add(countUsedSortButton, c);
@@ -257,59 +249,11 @@ public class MainWindow extends JFrame {
                     int ret = fileopen.showDialog(null, "Открыть файл базы замен");
                     if (ret == JFileChooser.APPROVE_OPTION) {
                         File file = fileopen.getSelectedFile();
-//                        try {
-//                            data = new InputFile(file.toPath().toString());
-//                        } catch (Throwable ex) {
-//                            JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//
-//                        }
                         pathPatternInput.setText(file.toPath().toString());
                         patternpath = file.toPath().toString();
-//                        int baseMinDis;
-//                        int probMinDis;
-//                        double probability;
-//                        double randmindis;
-//                        double randused;
-//
-//                        try {
-//                            if (baseMinDisInput.getText().equals(""))
-//                                baseMinDis = 0;
-//                            else
-//                                baseMinDis = Integer.parseInt(baseMinDisInput.getText());
-//                            if (probMinDisInput.getText().equals(""))
-//                                probMinDis = 0;
-//                            else
-//                                probMinDis = Integer.parseInt(baseMinDisInput.getText());
-//                            if (probabilityInput.getText().equals(""))
-//                                probability = 0;
-//                            else if ((Double.parseDouble(probabilityInput.getText()) <= 1) && (Double.parseDouble(probabilityInput.getText()) >= 0))
-//                                probability = Double.parseDouble(probabilityInput.getText());
-//                            else
-//                                throw new NumberFormatException();
-//                            if (randMinDisInput.getText().equals(""))
-//                                randmindis = 0;
-//                            else
-//                                randmindis = Double.parseDouble(randMinDisInput.getText());
-//                            if (randUsedInput.getText().equals(""))
-//                                randused = 0;
-//                            else
-//                                randused = Double.parseDouble(randUsedInput.getText());
-//
-//                            try {
-//                                replaceBase = data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
-//                            } catch (Throwable ex) {
-//                                JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                            }
-//                            if (replaceBase != null) {
                         if (!textpath.equals(""))
                             saveTextButton.setEnabled(true);
-//                            }
-//
-//                        } catch (NumberFormatException ex) {
-//                            JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                        } catch (Throwable exe) {
-//                            JOptionPane.showMessageDialog(null, exe.getMessage() + " файла " + fileopen.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                        }
+
                     }
                 }
         );
@@ -322,47 +266,62 @@ public class MainWindow extends JFrame {
                 File file = fileopen.getSelectedFile();
                 pathTextInput.setText(file.toPath().toString());
                 textpath = file.toPath().toString();
-//                try {
-//                    text = data.getPreparedText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
-//                } catch (Throwable ex) {
-//                    JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                }
+
                 if (!patternpath.equals(""))
                     saveTextButton.setEnabled(true);
-//                System.out.println(text);
             }
         });
 
         saveTextButton.addActionListener((e) -> {
                     ChangeStr tmp = new ChangeStr();
-                JFileChooser fc; //= new JFileChooser(){
-//                    @Override
-//                    public void approveSelection(){
-//                        File f = getSelectedFile();
-//                        if(f.exists() && getDialogType() == SAVE_DIALOG){
-//                            int result = JOptionPane.showConfirmDialog(this,"The file exists, overwrite?","Existing file",JOptionPane.YES_NO_CANCEL_OPTION);
-//                            switch(result){
-//                                case JOptionPane.YES_OPTION:
-//                                    super.approveSelection();
-//                                    return;
-//                                case JOptionPane.NO_OPTION:
-//                                    return;
-//                                case JOptionPane.CLOSED_OPTION:
-//                                    return;
-//                                case JOptionPane.CANCEL_OPTION:
-//                                    cancelSelection();
-//                                    return;
-//                            }
-//                        }
-//                        super.approveSelection();
-//                    }
-//                };
-                    if (usedSaveText != null){
-                        fc = new JFileChooser(usedSaveText);
+                    JFileChooser fc;
+                    if (usedSaveText != null) {
+                        fc = new JFileChooser(usedSaveText) {
+                            @Override
+                            public void approveSelection() {
+                                File f = getSelectedFile();
+                                if (f.exists() && getDialogType() == SAVE_DIALOG) {
+                                    int result = JOptionPane.showConfirmDialog(this, "Вы желаете перезаписать файл?", "Existing file", JOptionPane.YES_NO_CANCEL_OPTION);
+                                    switch (result) {
+                                        case JOptionPane.YES_OPTION:
+                                            super.approveSelection();
+                                            return;
+                                        case JOptionPane.NO_OPTION:
+                                            return;
+                                        case JOptionPane.CLOSED_OPTION:
+                                            return;
+                                        case JOptionPane.CANCEL_OPTION:
+                                            cancelSelection();
+                                            return;
+                                    }
+                                }
+                                super.approveSelection();
+                            }
+                        };
                         fc.setSelectedFile(new File(usedSaveText));
-                    }
-                    else
-                        fc = new JFileChooser(System.getProperty("user.dir"));
+                    } else
+                        fc = new JFileChooser(System.getProperty("user.dir")) {
+                            @Override
+                            public void approveSelection() {
+                                File f = getSelectedFile();
+                                if (f.exists() && getDialogType() == SAVE_DIALOG) {
+                                    int result = JOptionPane.showConfirmDialog(this, "Вы желаете перезаписать файл?", "Existing file", JOptionPane.YES_NO_CANCEL_OPTION);
+                                    switch (result) {
+                                        case JOptionPane.YES_OPTION:
+                                            super.approveSelection();
+                                            return;
+                                        case JOptionPane.NO_OPTION:
+                                            return;
+                                        case JOptionPane.CLOSED_OPTION:
+                                            return;
+                                        case JOptionPane.CANCEL_OPTION:
+                                            cancelSelection();
+                                            return;
+                                    }
+                                }
+                                super.approveSelection();
+                            }
+                        };
                     if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
                         try (FileWriter fw = new FileWriter(fc.getSelectedFile(), StandardCharsets.UTF_8)) {
                             //........................................................................
@@ -391,7 +350,6 @@ public class MainWindow extends JFrame {
                                 if (!patternpath.equals("") && errs != true) {
                                     File file = new File(patternpath);
                                     if (file.isDirectory()) {
-                                        // ArrayList<Replace> tmparr = new ArrayList<>();
                                         File[] filesInDir = file.listFiles();
                                         for (File f : filesInDir) {
                                             if (f.getName().equals("options.txt")) {
@@ -400,36 +358,19 @@ public class MainWindow extends JFrame {
                                             }
                                         }
                                     }
-
-//                                        try {
-//                                            data = new InputFile(file.toPath().toString());
-//                                            // tmparr.addAll(Arrays.asList(data.getReplace));
-//                                            replaceBase = data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
-//                                        } catch (Throwable exe) {
-//                                            errs = true;
-//                                            JOptionPane.showMessageDialog(null, exe.getMessage() + " файла " + f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                                        }
-//                                        if (errs)
-//                                            break;
-
-
-                                   // } else {
-                                        if (!errs) {
-                                            try {
-                                                data = new InputFile(file.toPath().toString());
-                                                replaceBase = data.getReplace(baseMinDis, probMinDis, Short.parseShort(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
-                                            } catch (Throwable ex) {
-                                                JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-                                            }
-
+                                    if (!errs) {
+                                        try {
+                                            data = new InputFile(file.toPath().toString());
+                                            replaceBase = data.getReplace(baseMinDis, probMinDis, Short.parseShort(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
+                                        } catch (Throwable ex) {
+                                            JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                         }
-                               //     }
 
+                                    }
                                 }
                                 if ((!errs) && (!optionspath.equals(""))) {
                                     try {
                                         veropropuskov = InputFile.loadOptions(optionspath);
-                                        System.out.println(veropropuskov.keySet());
                                     } catch (Throwable exe) {
                                         JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                     }
@@ -437,22 +378,19 @@ public class MainWindow extends JFrame {
                                 if (!textpath.equals("") && !errs) {
                                     File file = new File(textpath);
                                     try {
-                                        text = data.getPreparedText(file.toPath().toString(), Short.parseShort(groupE.getSelection().getActionCommand()),Short.parseShort(groupU.getSelection().getActionCommand()), Short.parseShort(groupZi.getSelection().getActionCommand()));
+                                        text = data.getPreparedText(file.toPath().toString(), Short.parseShort(groupE.getSelection().getActionCommand()), Short.parseShort(groupU.getSelection().getActionCommand()), Short.parseShort(groupZi.getSelection().getActionCommand()));
                                     } catch (Throwable ex) {
                                         JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                     }
                                 }
-                                //.........................................................................
-                                for (int i = 0; i < replaceBase.length; i++)
-                                                System.out.println(replaceBase[i].replacement + " " + replaceBase[i].ID );
+
                                 if (!errs) {
                                     groupCount = new HashMap<>();
                                     fw.write('\ufeff');
                                     for (int i = 0; i < text.size(); i++) {
-                                        fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, groupCount, Short.parseShort(groupVar.getSelection().getActionCommand()),Short.parseShort(groupU.getSelection().getActionCommand())), Short.parseShort(groupU.getSelection().getActionCommand())) + System.lineSeparator());
+                                        fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, groupCount, Short.parseShort(groupVar.getSelection().getActionCommand()), Short.parseShort(groupU.getSelection().getActionCommand())), Short.parseShort(groupU.getSelection().getActionCommand())) + System.lineSeparator());
                                     }
                                     usedSaveText = fc.getSelectedFile().getPath();
-                                    System.out.println(usedSaveText);
                                     countUsedSortButton.setEnabled(true);
                                     coeffUsedSortButton.setEnabled(true);
                                     groupSortButton.setEnabled(true);
@@ -467,13 +405,6 @@ public class MainWindow extends JFrame {
         );
 
         openDirButton.addActionListener((e) -> {
-//                        replaceBase = null;
-//                        boolean errs = false;
-//                        int baseMinDis;
-//                        int probMinDis;
-//                        double probability;
-//                        double randmindis;
-//                        double randused;
 
                     JFileChooser fileopen = new JFileChooser(System.getProperty("user.dir"));
                     fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -493,64 +424,6 @@ public class MainWindow extends JFrame {
                         }
                         if (!textpath.equals(""))
                             saveTextButton.setEnabled(true);
-
-//                                        try {
-//                                            veropropuskov = InputFile.loadOptions(f.toPath().toString());
-//                                            System.out.println(veropropuskov.keySet());
-//                                        } catch (Throwable exe) {
-//                                            JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                                        }
-//                                    } else {
-//                                        try {
-//                                            if (baseMinDisInput.getText().equals(""))
-//                                                baseMinDis = 0;
-//                                            else
-//                                                baseMinDis = Integer.parseInt(baseMinDisInput.getText());
-//                                            if (probMinDisInput.getText().equals(""))
-//                                                probMinDis = 0;
-//                                            else
-//                                                probMinDis = Integer.parseInt(baseMinDisInput.getText());
-//                                            if (probabilityInput.getText().equals(""))
-//                                                probability = 0;
-//                                            else if ((Double.parseDouble(probabilityInput.getText()) <= 1) && (Double.parseDouble(probabilityInput.getText()) >= 0))
-//                                                probability = Double.parseDouble(probabilityInput.getText());
-//                                            else
-//                                                throw new NumberFormatException();
-//                                            if (randMinDisInput.getText().equals(""))
-//                                                randmindis = 0;
-//                                            else
-//                                                randmindis = Double.parseDouble(randMinDisInput.getText());
-//                                            if (randUsedInput.getText().equals(""))
-//                                                randused = 0;
-//                                            else
-//                                                randused = Double.parseDouble(randUsedInput.getText());
-//
-//                                            data = new InputFile(f.toPath().toString());
-//                                            try {
-//                                                tmparr.addAll(Arrays.asList(data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused)));
-//                                            } catch (Throwable ex) {
-//                                                JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                                                errs = true;
-//                                            }
-//                                        } catch (NumberFormatException ex) {
-//                                            errs = true;
-//                                            JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                                        } catch (Throwable exe) {
-//                                            errs = true;
-//                                            JOptionPane.showMessageDialog(null, exe.getMessage() + " файла " + f.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                                        }
-//                                        if (errs)
-//                                            break;
-//
-//                                        if (!errs) {
-//                                            replaceBase = tmparr.toArray(new Replace[tmparr.size()]);
-//                                            openTextButton.setEnabled(true);
-//                                            for (int i = 0; i < replaceBase.length; i++)
-//                                                System.out.println(replaceBase[i].replacement + " " + replaceBase[i].substitute + " приоритет: " + replaceBase[i].priority + " мин дис: " + replaceBase[i].minDis + " важность: " + replaceBase[i].importance + " " + replaceBase[i].coeffOfUsed);
-//                                        }
-//                                    }
-//                                }
-//                            }
                     }
                 }
         );
@@ -568,11 +441,6 @@ public class MainWindow extends JFrame {
                 File file = fileopen.getSelectedFile();
                 pathOptionInput.setText(file.toPath().toString());
                 optionspath = file.toPath().toString();
-//                    try {
-//                        veropropuskov = InputFile.loadOptions(file.toPath().toString());
-//                    } catch (Throwable exe) {
-//                        JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
-//                    }
             }
         });
 
@@ -629,7 +497,7 @@ public class MainWindow extends JFrame {
         statistics.setText(tmpStr.toString());
     }
 
-    public String ahaCorasickText(String text, Replace[] replaces, Map<Integer, Integer> groupCount, int mark,int modU) {
+    public String ahaCorasickText(String text, Replace[] replaces, Map<Integer, Integer> groupCount, int mark, int modU) {
         AhoCorasick ahoCorasick = new AhoCorasick();
         for (int k = 0; k < replaces.length; k++) {
             ahoCorasick.addToBohr(replaces[k].replacement);
@@ -640,7 +508,7 @@ public class MainWindow extends JFrame {
         for (int i = 0; i < words.length; i++) {
             Matcher matcher = pattern.matcher(words[i]);
             if (matcher.find()) {
-                HundlerWord hw = new HundlerWord(words[i], replaces, groupCount, mark,(short) modU);
+                HundlerWord hw = new HundlerWord(words[i], replaces, groupCount, mark, (short) modU, (short) (modJCheck.isSelected() ? 1 : 0));
                 ahoCorasick.findInd(words[i].toLowerCase(), hw);
 
                 for (String key : hw.indexes.keySet()) {

@@ -41,79 +41,42 @@ public class HundlerWord {
 
         if (mark == 0) d = "i";
         else {
-            int number = (int) ( Math.random() * 2 );
+            int number = (int) (Math.random() * 2);
             if (number == 0) d = "/";
             else d = "\\";
         }
     }
 
-    public void printBlockL() {
-        for(int g = 0; g < blocksL.length; g++) {
-            if (blocksL[g])System.out.print(1);
-            else System.out.print(0);
-        }
-        System.out.println();
-    }
-
-//    public void fixA(List<Integer> allInds ) {
-//        if (word.charAt(0) == 'й' || word.charAt(0) == 'Й') {
-//            if (word.length() > 1 && word.charAt(1) == 'а' || word.charAt(1) == 'у' || word.charAt(1) == 'о' || word.charAt(1) == 'А' || word.charAt(1) == 'У' || word.charAt(1) == 'О') {
-//                int j = 0;
-//                while (j < allInds.size()) {
-//                    if (allInds.get(j) == 1) {
-//                        allInds.remove(j);
-//                        break;
-//                    }
-//                    j++;
-//                }
-//            }
-//        }
-//
-//        for (int i = 1; i < word.length() - 1; i++) {
-//            if (isBadChar(word.toLowerCase().charAt(i-1)) && (word.charAt(i) == 'й' || word.charAt(i) == 'Й') &&
-//                    (word.charAt(i + 1) == 'а' || word.charAt(i + 1) == 'у' || word.charAt(i + 1) == 'о' || word.charAt(i + 1) == 'А' || word.charAt(i+1) == 'У' || word.charAt(i+1) == 'О')) {
-//                int j = 0;
-//                while (j < allInds.size()) {
-//                    if (allInds.get(j) == i + 1) {
-//                        allInds.remove(j);
-//                        break;
-//                    }
-//                    j++;
-//                }
-//            }
-//        }
-//    }
-
 
     public String launch() {
-        Arrays.sort(replaces,(o1, o2)-> compare(o1,o2));
+        Arrays.sort(replaces, (o1, o2) -> compare(o1, o2));
 
         int i = 0;
 
 
-        while(indexes.size() != 0) {
+        while (indexes.size() != 0) {
             if (i == replaces.length) break;
 
-            if(indexes.containsKey(replaces[i].replacement) && indexes.get(replaces[i].replacement).size() > 0) {
+            if (indexes.containsKey(replaces[i].replacement) && indexes.get(replaces[i].replacement).size() > 0) {
 
                 if (replaces[i].countBlock == 0) {
                     int index = indexes.get(replaces[i].replacement).get(0);
 
                     if (modJ == 1) {
-                        if (index > 0 && ( word.charAt(index - 1) == 'ъ' || word.charAt(index - 1) == 'Ъ' )) { // буква стоящая после ъ не может начинать замену если стоит флаг modJ
+                        if (index > 0 && (word.charAt(index - 1) == 'ъ' || word.charAt(index - 1) == 'Ъ')) { // буква стоящая после ъ не может начинать замену если стоит флаг modJ
                             indexes.get(replaces[i].replacement).remove(0);
                             continue;
                         }
                     }
 
                     if (modU == 2) {
-                        if (index == 1 && ( word.charAt(0) == 'Й' || word.charAt(0) == 'й' )) {
+                        if (index == 1 && (word.charAt(0) == 'Й' || word.charAt(0) == 'й')) {
                             if (word.charAt(1) == 'а' || word.charAt(1) == 'у' || word.charAt(1) == 'о' || word.charAt(1) == 'А' || word.charAt(1) == 'У' || word.charAt(1) == 'О') {
                                 indexes.get(replaces[i].replacement).remove(0);
                                 continue;
                             }
                         } else if (index > 1) {
-                            if (isBadChar(word.toLowerCase().charAt(index-2)) && (word.charAt(index - 1) == 'й' || word.charAt(index - 1) == 'Й') &&
+                            if (isBadChar(word.toLowerCase().charAt(index - 2)) && (word.charAt(index - 1) == 'й' || word.charAt(index - 1) == 'Й') &&
                                     (word.charAt(index) == 'а' || word.charAt(index) == 'у' || word.charAt(index) == 'о' || word.charAt(index) == 'А' || word.charAt(index) == 'У' || word.charAt(index) == 'О')) {
                                 indexes.get(replaces[i].replacement).remove(0);
                                 continue;
@@ -135,7 +98,7 @@ public class HundlerWord {
                     if (lettersIsFree) {
                         //вероятность отказа
                         boolean isNotBlocked;
-                        if (replaces[i].importance - 1.0 > 0.0001 ) {
+                        if (replaces[i].importance - 1.0 > 0.0001) {
                             double protectCh = replaces[i].importance - 1.0;
                             isNotBlocked = (!experiment(replaces[i].chanceBlock) || (experiment(replaces[i].chanceBlock) && experiment(protectCh)));
 
@@ -143,16 +106,16 @@ public class HundlerWord {
                             boolean blockLCh = false;
                             double protectCh = replaces[i].importance;
 
-                            for (int j = index; j < index + replaces[i].replacement.length(); j++ ) {
+                            for (int j = index; j < index + replaces[i].replacement.length(); j++) {
                                 if (blocksIm[j]) {
                                     blockLCh = true;
                                     break;
                                 }
                             }
 
-                            isNotBlocked = (!experiment(replaces[i].chanceBlock) && (!blockLCh || blockLCh && experiment(protectCh)) );
+                            isNotBlocked = (!experiment(replaces[i].chanceBlock) && (!blockLCh || blockLCh && experiment(protectCh)));
                             if (!isNotBlocked) {
-                                for (int j = index; j < index + replaces[i].replacement.length(); j++ ) {
+                                for (int j = index; j < index + replaces[i].replacement.length(); j++) {
                                     blocksIm[j] = true;
                                 }
                             }
@@ -162,7 +125,8 @@ public class HundlerWord {
                         if (!isNotBlocked) {
                             if (indexes.containsKey(replaces[i].replacement)) {
                                 indexes.get(replaces[i].replacement).remove(0);
-                                if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
+                                if (indexes.get(replaces[i].replacement).size() == 0)
+                                    indexes.remove(replaces[i].replacement);
                             }
                             continue;
                         }
@@ -185,7 +149,7 @@ public class HundlerWord {
                         //увеличиваем счетчики
                         replaces[i].incCountGood(1);
                         replaces[i].incCoeffOfUsed();
-                        replaces[i].repBlock(indexes); //блокировка на мин. дис.
+                        replaces[i].repBlock(); //блокировка на мин. дис.
                         //счетчик групп
                         groupCount.put(replaces[i].group, groupCount.get(replaces[i].group) + 1);
 
@@ -213,8 +177,8 @@ public class HundlerWord {
                             check.add(replace);
                         }
                     }
-                    if (check.size() >  1) {
-                        int j = i+1;
+                    if (check.size() > 1) {
+                        int j = i + 1;
                         while (j < replaces.length && !replaces[j].replacement.equals(replaces[i].replacement)) j++;
                         i = j;
                         continue;
@@ -226,7 +190,7 @@ public class HundlerWord {
                 if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
 
                 //сортируем по приоритету и приравневаем указатель на замену к 1 замене
-                Arrays.sort(replaces,(o1, o2)-> compare(o1,o2));
+                Arrays.sort(replaces, (o1, o2) -> compare(o1, o2));
                 i = 0;
             } else i++; // идем дальше по приоритету
 
@@ -252,14 +216,15 @@ public class HundlerWord {
 
         StringBuffer ww = new StringBuffer();
         int j = 0;
-        while(j < word.length()) {
+        while (j < word.length()) {
 
             if (!allInds.contains(j)) {
-                if (j > 0 && isShip(word.toLowerCase().charAt(j-1)) && word.charAt(j) == 'й' && allInds.contains(j+1)) {
+                if (j > 0 && isShip(word.toLowerCase().charAt(j - 1)) && word.charAt(j) == 'й' && allInds.contains(j + 1)) {
                     j++;
                     continue;
                 }
-                if (ww.length() != 0 && !myIsLetter(ww.charAt(ww.length()-1)) && word.charAt(j) == '́') ww.append('\'');
+                if (ww.length() != 0 && !myIsLetter(ww.charAt(ww.length() - 1)) && word.charAt(j) == '́')
+                    ww.append('\'');
                 else ww.append(word.charAt(j));
                 j++;
             } else {
@@ -281,21 +246,21 @@ public class HundlerWord {
                         }
 
                         Random rand = new Random(System.nanoTime());
-                        int ranNum = (int) (rand.nextDouble() * r.substitute.size() );
+                        int ranNum = (int) (rand.nextDouble() * r.substitute.size());
 
                         if (!d.equals("i")) {
                             if (r.substitute.get(ranNum).charAt(0) == '/' || r.substitute.get(ranNum).charAt(0) == '\\')
                                 ww = ww.append(r.substitute.get(ranNum));
                             else ww = ww.append(d + r.substitute.get(ranNum));
 
-                            int number = (int) ( Math.random() * 2 );
+                            int number = (int) (Math.random() * 2);
                             if (number == 0) d = "/";
                             else d = "\\";
                         } else {
                             if (ww.length() != 0) {
-                                char x = ww.toString().charAt(ww.length()-1);
+                                char x = ww.toString().charAt(ww.length() - 1);
                                 if (x == '$' || x == '&') {
-                                    if (ww.length() > 1) x = ww.toString().charAt(ww.length()-2);
+                                    if (ww.length() > 1) x = ww.toString().charAt(ww.length() - 2);
                                     else x = 'а';
                                 }
 
@@ -323,19 +288,19 @@ public class HundlerWord {
     }
 
     public static int compare(Replace o1, Replace o2) {
-        if (Math.abs(o1.coeffOfUsedRan - o2.coeffOfUsedRan) < 0.0001 ) {
+        if (Math.abs(o1.coeffOfUsedRan - o2.coeffOfUsedRan) < 0.0001) {
             if (o1.priority == o2.priority) {
                 if (o1.replacement.length() == o2.replacement.length()) return 0;
-                else return o2.replacement.replaceAll("[$&]", "").length() - o1.replacement.replaceAll("[$&]", "").length();
-            }
-            else return o2.priority - o1.priority;
+                else
+                    return o2.replacement.replaceAll("[$&]", "").length() - o1.replacement.replaceAll("[$&]", "").length();
+            } else return o2.priority - o1.priority;
         }
         if (o1.coeffOfUsedRan - o2.coeffOfUsedRan > 0.0001) return 1;
         else return -1;
     }
 
     public static boolean myIsLetter(char x) {
-        return ( (((int) x >= 'а') && ((int) x <= 'я')) || ( ((int) x >= 'А') && ((int) x <= 'Я')) || x =='\'' );
+        return ((((int) x >= 'а') && ((int) x <= 'я')) || (((int) x >= 'А') && ((int) x <= 'Я')) || x == '\'');
     }
 
     public static boolean experiment(double chance) {

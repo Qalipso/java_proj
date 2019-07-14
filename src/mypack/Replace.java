@@ -67,7 +67,7 @@ public class Replace {
                 if (substr.get(0).equals("") || substr.get(1).equals("") || substr.get(2).equals("") || substr.get(0).indexOf(' ') != -1 || substr.get(1).indexOf(' ') != -1)
                     errors = k;
                 if (modifyU != 0)
-                    replacement = tmp.modU(substr.get(0),modifyU);
+                    replacement = tmp.modU(substr.get(0), modifyU);
                 else
                     replacement = substr.get(0);
                 substitute.add(substr.get(1));
@@ -78,11 +78,11 @@ public class Replace {
                     Random rand = new Random();
                     rand.setSeed(System.nanoTime());
                     double ranNumber = (rand.nextDouble() * coeffOfRan * 2) - coeffOfRan;
-                    coeffOfUsedRan = coeffOfUsed + (1/(double)priority) * ranNumber;
+                    coeffOfUsedRan = coeffOfUsed + (1 / (double) priority) * ranNumber;
                 }
                 if (!substr.get(3).equals("")) {
                     minDis = Math.max((int) Math.round(Integer.parseInt(substr.get(3)) * minDisCoeff), propMinDis);
-                    minDis = Math.max(minDis, (int)Math.round(baseMinDis*minDisCoeff));
+                    minDis = Math.max(minDis, (int) Math.round(baseMinDis * minDisCoeff));
                     if (minDis < 0)
                         throw new ArrayIndexOutOfBoundsException();
                 } else {
@@ -124,46 +124,39 @@ public class Replace {
         }
     }
 
-    public void incCoeffOfUsed(){
-        coeffOfUsed += 1/(double)priority;
+    public void incCoeffOfUsed() {
+        coeffOfUsed += 1 / (double) priority;
 
         Random rand = new Random();
         rand.setSeed(System.nanoTime());
         double ranNumber = (rand.nextDouble() * coeffOfRan * 2) - coeffOfRan;
 
-        coeffOfUsedRan = coeffOfUsed + (1/(double)priority) * ranNumber;
+        coeffOfUsedRan = coeffOfUsed + (1 / (double) priority) * ranNumber;
     }
 
-    public void incCountGood(int x) { countGood += x; }
+    public void incCountGood(int x) {
+        countGood += x;
+    }
 
-    public void incCountBad(int x) { countBad += x; }
+    public void incCountBad(int x) {
+        countBad += x;
+    }
 
-    public void incCountFake(int x) { countFake += x; }
+    public void incCountFake(int x) {
+        countFake += x;
+    }
 
     public void decCountBlock() {
-
-//        if (minDis != 0) {
-
-//
-//            if (countBlock == 0) {
-//                Random rand = new Random();
-//                rand.setSeed(System.nanoTime());
-//                double ranNumber = (rand.nextDouble() * coeffOfRandMinDis * 2) - coeffOfRandMinDis;
-//
-//                countBlock = (int) Math.round( minDis * (1 + ranNumber) );
-//            }
-            countBlock--;
-//        }
-
+        countBlock--;
     }
 
-    public void repBlock(Map<String, List<Integer>> indexes) {
+    public void repBlock() {
         //удаление вне зависимости успех или неудача
         Random rand = new Random();
         rand.setSeed(System.nanoTime());
         double ranNumber = (rand.nextDouble() * coeffOfRandMinDis * 2) - coeffOfRandMinDis;
 
-        countBlock = (int)Math.abs(Math.round( minDis * (1 + ranNumber) ));
+        countBlock = (int) Math.abs(Math.round(minDis * (1 + ranNumber)));
     }
 
     public void blockChild() {
@@ -171,7 +164,7 @@ public class Replace {
         rand.setSeed(System.nanoTime());
         double ranNumber = (rand.nextDouble() * coeffOfRandMinDis * 2) - coeffOfRandMinDis;
 
-        countBlock = Math.max(countBlock, (int) Math.round( minDis * (1 + ranNumber) ));
+        countBlock = Math.max(countBlock, (int) Math.round(minDis * (1 + ranNumber)));
     }
 
 }

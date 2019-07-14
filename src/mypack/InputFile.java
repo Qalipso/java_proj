@@ -17,22 +17,20 @@ public class InputFile {
         File file = new File(patternWay);
         forChange = new ArrayList<>();
         if (file.isDirectory()) {
-            //ArrayList<Replace> tmparr = new ArrayList<>();
             File[] filesInDir = file.listFiles();
             for (File f : filesInDir) {
                 if (!f.getName().equals("options.txt")) {
-                    forChange.add("*"+ f.getName());
+                    forChange.add("*" + f.getName());
                     InputFileInit(f);
                 }
             }
-        }
-        else {
-            forChange.add("*"+ file.getName());
+        } else {
+            forChange.add("*" + file.getName());
             InputFileInit(file);
         }
     }
 
-    public void InputFileInit(File file) throws Throwable{
+    public void InputFileInit(File file) throws Throwable {
         try {
 
             InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(file));
@@ -66,6 +64,7 @@ public class InputFile {
             throw ex;
         }
     }
+
     public Replace[] getReplace(int baseMinDis, int propMinDis, short modifyU, double probability, double randmindis, double randUsed) throws Throwable {
         Replace[] replaceBase1 = new Replace[1];
         ArrayList<Replace> replaceBase = new ArrayList<>();
@@ -73,53 +72,46 @@ public class InputFile {
         int tmpgroup = 1;
         int j = 0;
         masgroup[0] = 0;
-        //currentfile =
         for (int i = 0; i < forChange.size(); i++) {
-            if ((!forChange.get(i).equals(""))&&forChange.get(i).charAt(0) == '*') {
+            if ((!forChange.get(i).equals("")) && forChange.get(i).charAt(0) == '*') {
                 currentfile = forChange.get(i).substring(1);
                 j++;
-            }
-            else{
-             if (forChange.get(i).equals("")) {
-                masgroup[tmpgroup] = i - j;
-                tmpgroup++;
-                j++;
             } else {
-                replaceBase.add(new Replace(coeffa, coeffb, forChange.get(i), baseMinDis, propMinDis, modifyU, i - j, probability, randmindis, randUsed, tmpgroup, currentfile));
-                if (replaceBase.get(replaceBase.size() - 1).errors != -1) {
-                    Throwable ex = new Exception("Ошибка ввода в строке " + (i - j + 1));
-                    throw ex;
+                if (forChange.get(i).equals("")) {
+                    masgroup[tmpgroup] = i - j;
+                    tmpgroup++;
+                    j++;
+                } else {
+                    replaceBase.add(new Replace(coeffa, coeffb, forChange.get(i), baseMinDis, propMinDis, modifyU, i - j, probability, randmindis, randUsed, tmpgroup, currentfile));
+                    if (replaceBase.get(replaceBase.size() - 1).errors != -1) {
+                        Throwable ex = new Exception("Ошибка ввода в строке " + (i - j + 1));
+                        throw ex;
+                    }
                 }
             }
-        }
         }
         for (int i = 0; i < replaceBase.size(); i++) {
             if (replaceBase.get(i).childsInt != null) {
                 // добавление всeх в ckild из группы
-//                if (replaceBase.get(i).childsInt.contains(0)) {
-//
-//                }
-                //
+
                 if ((replaceBase.get(i).childsInt.contains(0))) {
                     int g = masgroup[replaceBase.get(i).group - masgroup[replaceBase.get(i).group - 1]];
                     for (int z = 0; z < g; z++) {
                         if (z + masgroup[replaceBase.get(i).group - 1] != i)
                             replaceBase.get(i).childsRep.add(replaceBase.get(z + masgroup[replaceBase.get(i).group - 1]));
                     }
-                }
-                else
-                for (int k = 0; k < replaceBase.get(i).childsInt.size(); k++) {
-                    try {
-                        if ((replaceBase.get(i).childsInt.get(k) != null) && (replaceBase.get(i).childsInt.get(k)-1 < replaceBase.size())) {
-                            replaceBase.get(i).childsRep.add(replaceBase.get(replaceBase.get(i).childsInt.get(k) -1 + masgroup[replaceBase.get(i).group-1]));
+                } else
+                    for (int k = 0; k < replaceBase.get(i).childsInt.size(); k++) {
+                        try {
+                            if ((replaceBase.get(i).childsInt.get(k) != null) && (replaceBase.get(i).childsInt.get(k) - 1 < replaceBase.size())) {
+                                replaceBase.get(i).childsRep.add(replaceBase.get(replaceBase.get(i).childsInt.get(k) - 1 + masgroup[replaceBase.get(i).group - 1]));
+                            }
+                        } catch (Exception exe) {
+                            Throwable ee = new Exception("Ошибка ввода в строке " + (i + 1));
+                            throw ee;
                         }
-                    } catch (Exception exe) {
-                        Throwable ee = new Exception("Ошибка ввода в строке " + (i + 1));
-                        throw ee;
-                    }
 
-                }
-                System.out.println(replaceBase.get(i).replacement + " childsRep:" + replaceBase.get(i).childsRep);
+                    }
             }
         }
         replaceBase1 = replaceBase.toArray(replaceBase1);
@@ -137,10 +129,10 @@ public class InputFile {
             ChangeStr tmp = new ChangeStr();
             while ((strLine = br.readLine()) != null) {
                 buildStr.replace(0, buildStr.length(), "");
-                buildStr.append(tmp.modSpecial(strLine+" "));
-                buildStr.replace(0, buildStr.toString().length(), tmp.modE(buildStr.toString(),modifyE));
+                buildStr.append(tmp.modSpecial(strLine + " "));
+                buildStr.replace(0, buildStr.toString().length(), tmp.modE(buildStr.toString(), modifyE));
                 if (modifyU != 0)
-                    buildStr.replace(0, buildStr.toString().length(), tmp.modU(buildStr.toString(),modifyU));
+                    buildStr.replace(0, buildStr.toString().length(), tmp.modU(buildStr.toString(), modifyU));
                 if (modifyZi != 0)
                     buildStr.replace(0, buildStr.toString().length(), tmp.modZi(buildStr.toString()));
 
@@ -165,7 +157,7 @@ public class InputFile {
     }
 
     public static HashMap<String, Float> loadOptions(String optionsWay) throws Throwable {
-        int si=0;
+        int si = 0;
         HashMap<String, Float> hm = new HashMap<>();
         try {
             InputStream istream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(optionsWay));
@@ -177,7 +169,7 @@ public class InputFile {
                 hm.put(strElements[0], Float.parseFloat(strElements[1]));
             }
         } catch (Throwable e) {
-            e = new Exception("Ошибка в считывании опций, строка "+si);
+            e = new Exception("Ошибка в считывании опций, строка " + si);
             throw e;
         }
         return hm;

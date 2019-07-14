@@ -1,24 +1,22 @@
 package mypack;
 import java.util.ArrayList;
-import mypack.Node;
-import java.util.Arrays;
 import java.util.List;
 
 public class AhoCorasick {
 
-    public List<String> patterns ;
+    public List<String> patterns;
     private List<Node> bohr;
 
     public AhoCorasick() {
         patterns = new ArrayList<>();
         bohr = new ArrayList<>();
-        bohr.add(new Node(0,' '));
+        bohr.add(new Node(0, ' '));
     }
 
     public void addToBohr(String tmp_pattern) {
         int n = 0;
-        for(char symb : tmp_pattern.toCharArray()) {
-            if(!bohr.get(n).next_vexes.containsKey(symb)) {
+        for (char symb : tmp_pattern.toCharArray()) {
+            if (!bohr.get(n).next_vexes.containsKey(symb)) {
                 bohr.add(new Node(n, symb));
                 bohr.get(n).next_vexes.put(symb, bohr.size() - 1);
             }
@@ -30,8 +28,8 @@ public class AhoCorasick {
     }
 
     private int getSuffixLink(int vex) {
-        if(bohr.get(vex).sfx_link == -1) {
-            if(vex == 0 || bohr.get(vex).parent == 0) {
+        if (bohr.get(vex).sfx_link == -1) {
+            if (vex == 0 || bohr.get(vex).parent == 0) {
                 bohr.get(vex).sfx_link = 0;
             } else {
                 bohr.get(vex).sfx_link = getMove(getSuffixLink(bohr.get(vex).parent), bohr.get(vex).symb);
@@ -41,10 +39,10 @@ public class AhoCorasick {
     }
 
     private int getMove(int vex, char symb) {
-        if(!bohr.get(vex).move.containsKey(symb)) {
-            if(bohr.get(vex).next_vexes.containsKey(symb)) {
+        if (!bohr.get(vex).move.containsKey(symb)) {
+            if (bohr.get(vex).next_vexes.containsKey(symb)) {
                 bohr.get(vex).move.put(symb, bohr.get(vex).next_vexes.get(symb));
-            } else if(vex == 0) {
+            } else if (vex == 0) {
                 bohr.get(vex).move.put(symb, 0);
             } else {
                 int gm = getMove(getSuffixLink(vex), symb);
@@ -57,7 +55,7 @@ public class AhoCorasick {
     public void findInd(String text, HundlerWord hw) {
         int t = 0;
         int k = 0;
-        for(int i = 0; i < text.length(); i++) {
+        for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '&') {
                 k = 1;
                 continue;
@@ -69,14 +67,14 @@ public class AhoCorasick {
                 continue;
             }
 
-            this.check(t, i-k, hw);
+            this.check(t, i - k, hw);
             k = 0;
         }
     }
 
     private void check(int vex, int i, HundlerWord hw) {
-        for(int t = vex; t != 0; t = getSuffixLink(t)) {
-            if(bohr.get(t).flag) {
+        for (int t = vex; t != 0; t = getSuffixLink(t)) {
+            if (bohr.get(t).flag) {
                 int index = i - (patterns.get(bohr.get(t).pattern_index).length() - 1);
 
                 if (hw.indexes.containsKey(patterns.get(bohr.get(t).pattern_index))) {

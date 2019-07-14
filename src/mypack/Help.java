@@ -17,7 +17,6 @@ public class Help extends JFrame{
         c.fill   = GridBagConstraints.NONE;
         c.gridheight = 1;
         c.gridwidth  = GridBagConstraints.REMAINDER;
-        // c.gridx = GridBagConstraints.RELATIVE;
         c.gridx = 0;
         c.gridy = GridBagConstraints.RELATIVE;
         c.insets = new Insets(0, 0, 0, 0);
