@@ -11,14 +11,19 @@ public class HundlerWord {
     private boolean[] blocksL;
     private boolean[] blocksIm;
     private String d;
+    private short modU;
+    private short modJ;
+
     Replace[] replaces;
     private Map<Integer, Integer> groupCount;
 
-    public HundlerWord(String w, Replace[] re, Map<Integer, Integer> groupC, int mark) {
+    public HundlerWord(String w, Replace[] re, Map<Integer, Integer> groupC, int mark, short modU_, short modJ_ /* твердый знак 0 или 1 */) {
         word = w;
         groupCount = groupC;
         indexes = new HashMap<>();
         indexesToAdd = new HashMap<>();
+        modU = modU_;
+        modJ = modJ_;
 
         replaces = new Replace[re.length];
         for (int i = 0; i < re.length; i++) {
@@ -50,10 +55,41 @@ public class HundlerWord {
         System.out.println();
     }
 
+//    public void fixA(List<Integer> allInds ) {
+//        if (word.charAt(0) == 'й' || word.charAt(0) == 'Й') {
+//            if (word.length() > 1 && word.charAt(1) == 'а' || word.charAt(1) == 'у' || word.charAt(1) == 'о' || word.charAt(1) == 'А' || word.charAt(1) == 'У' || word.charAt(1) == 'О') {
+//                int j = 0;
+//                while (j < allInds.size()) {
+//                    if (allInds.get(j) == 1) {
+//                        allInds.remove(j);
+//                        break;
+//                    }
+//                    j++;
+//                }
+//            }
+//        }
+//
+//        for (int i = 1; i < word.length() - 1; i++) {
+//            if (isBadChar(word.toLowerCase().charAt(i-1)) && (word.charAt(i) == 'й' || word.charAt(i) == 'Й') &&
+//                    (word.charAt(i + 1) == 'а' || word.charAt(i + 1) == 'у' || word.charAt(i + 1) == 'о' || word.charAt(i + 1) == 'А' || word.charAt(i+1) == 'У' || word.charAt(i+1) == 'О')) {
+//                int j = 0;
+//                while (j < allInds.size()) {
+//                    if (allInds.get(j) == i + 1) {
+//                        allInds.remove(j);
+//                        break;
+//                    }
+//                    j++;
+//                }
+//            }
+//        }
+//    }
+
+
     public String launch() {
         Arrays.sort(replaces,(o1, o2)-> compare(o1,o2));
 
         int i = 0;
+
 
         while(indexes.size() != 0) {
             if (i == replaces.length) break;
@@ -62,6 +98,29 @@ public class HundlerWord {
 
                 if (replaces[i].countBlock == 0) {
                     int index = indexes.get(replaces[i].replacement).get(0);
+
+                    if (modJ == 1) {
+                        if (index > 0 && ( word.charAt(index - 1) == 'ъ' || word.charAt(index - 1) == 'Ъ' )) { // буква стоящая после ъ не может начинать замену если стоит флаг modJ
+                            indexes.get(replaces[i].replacement).remove(0);
+                            continue;
+                        }
+                    }
+
+                    if (modU == 2) {
+                        if (index == 1 && ( word.charAt(0) == 'Й' || word.charAt(0) == 'й' )) {
+                            if (word.charAt(1) == 'а' || word.charAt(1) == 'у' || word.charAt(1) == 'о' || word.charAt(1) == 'А' || word.charAt(1) == 'У' || word.charAt(1) == 'О') {
+                                indexes.get(replaces[i].replacement).remove(0);
+                                continue;
+                            }
+                        } else if (index > 1) {
+                            if (isBadChar(word.toLowerCase().charAt(index-2)) && (word.charAt(index - 1) == 'й' || word.charAt(index - 1) == 'Й') &&
+                                    (word.charAt(index) == 'а' || word.charAt(index) == 'у' || word.charAt(index) == 'о' || word.charAt(index) == 'А' || word.charAt(index) == 'У' || word.charAt(index) == 'О')) {
+                                indexes.get(replaces[i].replacement).remove(0);
+                                continue;
+                            }
+                        }
+
+                    }
 
                     //проверка: не заблокрованы ли буквы которые заменяем?
                     boolean lettersIsFree = true;
@@ -163,8 +222,8 @@ public class HundlerWord {
                 }
 
                 //убираем из indexes вхождение
-                    indexes.get(replaces[i].replacement).remove(0);
-                    if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
+                indexes.get(replaces[i].replacement).remove(0);
+                if (indexes.get(replaces[i].replacement).size() == 0) indexes.remove(replaces[i].replacement);
 
                 //сортируем по приоритету и приравневаем указатель на замену к 1 замене
                 Arrays.sort(replaces,(o1, o2)-> compare(o1,o2));
@@ -177,7 +236,6 @@ public class HundlerWord {
         for (Replace replace : replaces) {
             if (replace.countBlock != 0) {
                 replace.decCountBlock();
-                replace.indexesB.clear();
             }
         }
 
@@ -194,11 +252,10 @@ public class HundlerWord {
 
         StringBuffer ww = new StringBuffer();
         int j = 0;
-
         while(j < word.length()) {
 
             if (!allInds.contains(j)) {
-                if (j > 0 && isShip(word.charAt(j-1)) && word.charAt(j) == 'й' && allInds.contains(j+1)) {
+                if (j > 0 && isShip(word.toLowerCase().charAt(j-1)) && word.charAt(j) == 'й' && allInds.contains(j+1)) {
                     j++;
                     continue;
                 }
@@ -292,5 +349,9 @@ public class HundlerWord {
 
     public static boolean isShip(char x) {
         return (x == 'ш' || x == 'щ' || x == 'ж' || x == 'ц' || x == 'ч');
+    }
+
+    public static boolean isBadChar(char x) {
+        return (x == '-' || x == 'ъ' || x == 'ь' || isShip(x));
     }
 }

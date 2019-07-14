@@ -4,6 +4,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,7 @@ public class MainWindow extends JFrame {
     InputFile data;
     Replace[] replaceBase;
     ArrayList<String> text;
+    String usedSaveText = null;
     Map<Integer, Integer> groupCount;
     HashMap<String, Float> veropropuskov;
     private JButton openPatternButton = new JButton("Открыть файл Базы замен");
@@ -235,7 +237,7 @@ public class MainWindow extends JFrame {
         groupU.add(u2radio);
         groupU.add(u3radio);
 
-        u2radio.setSelected(true);
+        u3radio.setSelected(true);
 
         ButtonGroup groupZi = new ButtonGroup();
         groupZi.add(zi1radio);
@@ -251,7 +253,7 @@ public class MainWindow extends JFrame {
         variant1radio.setSelected(true);
         openPatternButton.addActionListener((e) -> {
                     replaceBase = null;
-                    JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+                    JFileChooser fileopen = new JFileChooser(System.getProperty("user.dir"));
                     int ret = fileopen.showDialog(null, "Открыть файл базы замен");
                     if (ret == JFileChooser.APPROVE_OPTION) {
                         File file = fileopen.getSelectedFile();
@@ -314,7 +316,7 @@ public class MainWindow extends JFrame {
 
         openTextButton.addActionListener((e) -> {
             text = null;
-            JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+            JFileChooser fileopen = new JFileChooser(System.getProperty("user.dir"));
             int ret = fileopen.showDialog(null, "Открыть файл исходного текста");
             if (ret == JFileChooser.APPROVE_OPTION) {
                 File file = fileopen.getSelectedFile();
@@ -333,9 +335,36 @@ public class MainWindow extends JFrame {
 
         saveTextButton.addActionListener((e) -> {
                     ChangeStr tmp = new ChangeStr();
-                    JFileChooser fc = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+                JFileChooser fc; //= new JFileChooser(){
+//                    @Override
+//                    public void approveSelection(){
+//                        File f = getSelectedFile();
+//                        if(f.exists() && getDialogType() == SAVE_DIALOG){
+//                            int result = JOptionPane.showConfirmDialog(this,"The file exists, overwrite?","Existing file",JOptionPane.YES_NO_CANCEL_OPTION);
+//                            switch(result){
+//                                case JOptionPane.YES_OPTION:
+//                                    super.approveSelection();
+//                                    return;
+//                                case JOptionPane.NO_OPTION:
+//                                    return;
+//                                case JOptionPane.CLOSED_OPTION:
+//                                    return;
+//                                case JOptionPane.CANCEL_OPTION:
+//                                    cancelSelection();
+//                                    return;
+//                            }
+//                        }
+//                        super.approveSelection();
+//                    }
+//                };
+                    if (usedSaveText != null){
+                        fc = new JFileChooser(usedSaveText);
+                        fc.setSelectedFile(new File(usedSaveText));
+                    }
+                    else
+                        fc = new JFileChooser(System.getProperty("user.dir"));
                     if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                        try (FileWriter fw = new FileWriter(fc.getSelectedFile())) {
+                        try (FileWriter fw = new FileWriter(fc.getSelectedFile(), StandardCharsets.UTF_8)) {
                             //........................................................................
                             replaceBase = null;
                             text = null;
@@ -388,7 +417,7 @@ public class MainWindow extends JFrame {
                                         if (!errs) {
                                             try {
                                                 data = new InputFile(file.toPath().toString());
-                                                replaceBase = data.getReplace(baseMinDis, probMinDis, Integer.parseInt(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
+                                                replaceBase = data.getReplace(baseMinDis, probMinDis, Short.parseShort(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
                                             } catch (Throwable ex) {
                                                 JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                             }
@@ -408,7 +437,7 @@ public class MainWindow extends JFrame {
                                 if (!textpath.equals("") && !errs) {
                                     File file = new File(textpath);
                                     try {
-                                        text = data.getPreparedText(file.toPath().toString(), Integer.parseInt(groupE.getSelection().getActionCommand()), Integer.parseInt(groupU.getSelection().getActionCommand()), Integer.parseInt(groupZi.getSelection().getActionCommand()));
+                                        text = data.getPreparedText(file.toPath().toString(), Short.parseShort(groupE.getSelection().getActionCommand()),Short.parseShort(groupU.getSelection().getActionCommand()), Short.parseShort(groupZi.getSelection().getActionCommand()));
                                     } catch (Throwable ex) {
                                         JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                     }
@@ -420,8 +449,10 @@ public class MainWindow extends JFrame {
                                     groupCount = new HashMap<>();
                                     fw.write('\ufeff');
                                     for (int i = 0; i < text.size(); i++) {
-                                        fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, groupCount, Integer.parseInt(groupVar.getSelection().getActionCommand())), Integer.parseInt(groupU.getSelection().getActionCommand())) + System.lineSeparator());
+                                        fw.write(tmp.getFinStr(ahaCorasickText(text.get(i), replaceBase, groupCount, Short.parseShort(groupVar.getSelection().getActionCommand()),Short.parseShort(groupU.getSelection().getActionCommand())), Short.parseShort(groupU.getSelection().getActionCommand())) + System.lineSeparator());
                                     }
+                                    usedSaveText = fc.getSelectedFile().getPath();
+                                    System.out.println(usedSaveText);
                                     countUsedSortButton.setEnabled(true);
                                     coeffUsedSortButton.setEnabled(true);
                                     groupSortButton.setEnabled(true);
@@ -444,7 +475,7 @@ public class MainWindow extends JFrame {
 //                        double randmindis;
 //                        double randused;
 
-                    JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+                    JFileChooser fileopen = new JFileChooser(System.getProperty("user.dir"));
                     fileopen.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     int ret = fileopen.showDialog(null, "Открыть папку с базами замен");
                     if (ret == JFileChooser.APPROVE_OPTION) {
@@ -531,7 +562,7 @@ public class MainWindow extends JFrame {
         );
 
         optionsButton.addActionListener((e) -> {
-            JFileChooser fileopen = new JFileChooser(new File(MainWindow.class.getProtectionDomain().getCodeSource().getLocation().getPath()));
+            JFileChooser fileopen = new JFileChooser(System.getProperty("user.dir"));
             int ret = fileopen.showDialog(null, "Открыть options");
             if (ret == JFileChooser.APPROVE_OPTION) {
                 File file = fileopen.getSelectedFile();
@@ -598,7 +629,7 @@ public class MainWindow extends JFrame {
         statistics.setText(tmpStr.toString());
     }
 
-    public String ahaCorasickText(String text, Replace[] replaces, Map<Integer, Integer> groupCount, int mark) {
+    public String ahaCorasickText(String text, Replace[] replaces, Map<Integer, Integer> groupCount, int mark,int modU) {
         AhoCorasick ahoCorasick = new AhoCorasick();
         for (int k = 0; k < replaces.length; k++) {
             ahoCorasick.addToBohr(replaces[k].replacement);
@@ -609,7 +640,7 @@ public class MainWindow extends JFrame {
         for (int i = 0; i < words.length; i++) {
             Matcher matcher = pattern.matcher(words[i]);
             if (matcher.find()) {
-                HundlerWord hw = new HundlerWord(words[i], replaces, groupCount, mark);
+                HundlerWord hw = new HundlerWord(words[i], replaces, groupCount, mark,(short) modU);
                 ahoCorasick.findInd(words[i].toLowerCase(), hw);
 
                 for (String key : hw.indexes.keySet()) {

@@ -1,6 +1,7 @@
 package mypack;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -35,7 +36,7 @@ public class InputFile {
         try {
 
             InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(file));
-            BufferedReader br = new BufferedReader(new InputStreamReader(inpStream));
+            BufferedReader br = new BufferedReader(new InputStreamReader(inpStream, StandardCharsets.UTF_8));
 
             String strLine;
             strLine = br.readLine();
@@ -65,7 +66,7 @@ public class InputFile {
             throw ex;
         }
     }
-    public Replace[] getReplace(int baseMinDis, int propMinDis, int modifyU, double probability, double randmindis, double randUsed) throws Throwable {
+    public Replace[] getReplace(int baseMinDis, int propMinDis, short modifyU, double probability, double randmindis, double randUsed) throws Throwable {
         Replace[] replaceBase1 = new Replace[1];
         ArrayList<Replace> replaceBase = new ArrayList<>();
         Integer[] masgroup = new Integer[forChange.size()];
@@ -125,12 +126,12 @@ public class InputFile {
         return replaceBase1;
     }
 
-    public ArrayList<String> getPreparedText(String textWay, int modifyE, int modifyU, int modifyZi) throws Throwable {
+    public ArrayList<String> getPreparedText(String textWay, short modifyE, short modifyU, short modifyZi) throws Throwable {
         preparedText = new ArrayList<>();
 
         try {
             InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(textWay));
-            BufferedReader br = new BufferedReader(new InputStreamReader(inpStream));
+            BufferedReader br = new BufferedReader(new InputStreamReader(inpStream, StandardCharsets.UTF_8));
             String strLine;
             StringBuilder buildStr = new StringBuilder();
             ChangeStr tmp = new ChangeStr();
@@ -168,7 +169,7 @@ public class InputFile {
         HashMap<String, Float> hm = new HashMap<>();
         try {
             InputStream istream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(optionsWay));
-            BufferedReader br = new BufferedReader(new InputStreamReader(istream));
+            BufferedReader br = new BufferedReader(new InputStreamReader(istream, StandardCharsets.UTF_8));
             String strLine;
             while ((strLine = br.readLine()) != null) {
                 si++;

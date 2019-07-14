@@ -27,7 +27,6 @@ public class Replace {
     public int countFake;
 
     public int errors = -1;
-    List<Integer> indexesB;
 
     public static int saveID = 0;
     public int ID;
@@ -37,7 +36,7 @@ public class Replace {
     public ArrayList<Integer> childsInt; /* используется только для заполнения childStr*/
     public ArrayList<Replace> childsRep;
 
-    public Replace(double priorityCoeff, double minDisCoeff, String str, int baseMinDis, int propMinDis, int modifyU, int k, double probability, double randmindis, double randUsed, int group_, String nameFile) {
+    public Replace(double priorityCoeff, double minDisCoeff, String str, int baseMinDis, int propMinDis, short modifyU, int k, double probability, double randmindis, double randUsed, int group_, String nameFile) {
         chanceBlock = probability;
         coeffOfRan = randUsed;
         file = nameFile;
@@ -47,7 +46,6 @@ public class Replace {
         ID = saveID;
         childsRep = new ArrayList<>();
         substitute = new ArrayList<>();
-        indexesB = new ArrayList<>();
         ChangeStr tmp = new ChangeStr();
         StringBuilder buildStr = new StringBuilder();
         buildStr.append(str);
@@ -84,7 +82,7 @@ public class Replace {
                 }
                 if (!substr.get(3).equals("")) {
                     minDis = Math.max((int) Math.round(Integer.parseInt(substr.get(3)) * minDisCoeff), propMinDis);
-                    minDis = Math.max(minDis, baseMinDis);
+                    minDis = Math.max(minDis, (int)Math.round(baseMinDis*minDisCoeff));
                     if (minDis < 0)
                         throw new ArrayIndexOutOfBoundsException();
                 } else {
