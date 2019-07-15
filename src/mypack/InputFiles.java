@@ -5,86 +5,115 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class InputFile {
+public class InputFiles {
 
-    public double coeffa;
-    public double coeffb;
+    public ArrayList<Double> coeffsa;
+    public ArrayList<Double> coeffsb;
     String currentfile;
-    ArrayList<String> forChange; // массив строк базы замен
+    String curfilename;
+    ArrayList<MyPair<String,Integer>> forChange; // массив строк базы замен
     ArrayList<String> preparedText;
 
-    public InputFile(String patternWay) throws Throwable {
+    public InputFiles(String patternWay) throws Throwable {
         File file = new File(patternWay);
         forChange = new ArrayList<>();
+        coeffsa = new ArrayList<>();
+        coeffsb = new ArrayList<>();
+        int fileNum = 0;
         if (file.isDirectory()) {
             File[] filesInDir = file.listFiles();
             for (File f : filesInDir) {
                 if (!f.getName().equals("options.txt")) {
-                    forChange.add("*" + f.getName());
-                    InputFileInit(f);
+                    curfilename = f.getName();
+                    forChange.add(new MyPair("*" + curfilename,0));
+                    currentfile = f.toPath().toString();
+                    InputFileInit();
+                    fileNum++;
                 }
             }
         } else {
-            forChange.add("*" + file.getName());
-            InputFileInit(file);
+            curfilename = file.getName();
+            forChange.add(new MyPair("*" + curfilename,0));
+            currentfile = file.toPath().toString();
+            InputFileInit();
         }
     }
 
-    public void InputFileInit(File file) throws Throwable {
+    public void InputFileInit() throws Throwable {
         try {
 
-            InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(file));
+            InputStream inpStream = checkForUtf8BOMAndDiscardIfAny(new FileInputStream(currentfile));
             BufferedReader br = new BufferedReader(new InputStreamReader(inpStream, StandardCharsets.UTF_8));
 
-            String strLine;
-            strLine = br.readLine();
+            String strLine = br.readLine();
+            int sn = 1;//№ строки
             String[] tmp = strLine.split(" ");
             try {
-                coeffa = Double.parseDouble(tmp[0]);
-                coeffb = Double.parseDouble(tmp[1]);
+                coeffsa.add(Double.parseDouble(tmp[0]));
+                coeffsb.add(Double.parseDouble(tmp[1]));
             } catch (NumberFormatException e) {
-                Throwable ex = new Exception("Ошибка в вводе коэффициентов");
+                Throwable ex = new Exception("Ошибка в вводе коэффициентов файла " + curfilename);
                 throw ex;
             }
-            while ((strLine = br.readLine()) != null) {
 
-                if ((strLine.indexOf('*') == -1) && (strLine.indexOf('\n') != 0) && (!strLine.equals("")))
-                    forChange.add(strLine);
+            while ((forChange.size() == 1 && (strLine = br.readLine()) != null)) {
+                sn++;
+                if (znrepStr(strLine)) forChange.add(new MyPair(strLine,sn));
+            }
+            if (forChange.size() == 1) sn++;
+            while ((strLine = br.readLine()) != null) {
+                sn++;
+                if (znrepStr(strLine)) forChange.add(new MyPair(strLine,sn));
                 else {
-                    if ((forChange.size() != 1))
-                        if ((!forChange.get(forChange.size() - 1).equals("")))
-                            forChange.add("");
+                    if ((!forChange.get(forChange.size() - 1).str.equals("")))
+                            forChange.add(new MyPair("",sn));
                 }
             }
-            if (!forChange.get(forChange.size() - 1).equals(""))
-                forChange.add("");
+            sn++;
+            if (!forChange.get(forChange.size() - 1).str.equals(""))
+                forChange.add(new MyPair("",sn));
 
         } catch (IOException e) {
-            Throwable ex = new Exception("Ошибка считывания файла " + file.getName());
+            Throwable ex = new Exception("Ошибка считывания файла " + curfilename);
             throw ex;
         }
     }
 
+    private boolean znrepStr(String s){
+        int sl_minus_1=s.length()-1;
+        for (int i=0; i<sl_minus_1; i++){
+            if (s.charAt(i) == '*' || s.charAt(i) == '\r' || s.charAt(i) == '\n') return false;
+            if (s.charAt(i) != '\t') return true;
+        }
+        return false;
+    }
+
     public Replace[] getReplace(int baseMinDis, int propMinDis, short modifyU, double probability, double randmindis, double randUsed) throws Throwable {
         Replace[] replaceBase1 = new Replace[1];
+        double coeffa =1;
+        double coeffb =0;
         ArrayList<Replace> replaceBase = new ArrayList<>();
         Integer[] masgroup = new Integer[forChange.size()];
         int tmpgroup = 1;
         int j = 0;
+        int filenum = 0;
         masgroup[0] = 0;
         for (int i = 0; i < forChange.size(); i++) {
-            if ((!forChange.get(i).equals("")) && forChange.get(i).charAt(0) == '*') {
-                currentfile = forChange.get(i).substring(1);
+            if ((!forChange.get(i).str.equals("")) && forChange.get(i).str.charAt(0) == '*') {
+                curfilename = forChange.get(i).str.substring(1);
+                coeffa = coeffsa.get(filenum);
+                coeffb = coeffsb.get(filenum);
+                filenum++;
                 j++;
             } else {
-                if (forChange.get(i).equals("")) {
+                if (forChange.get(i).str.equals("")) {
                     masgroup[tmpgroup] = i - j;
                     tmpgroup++;
                     j++;
                 } else {
-                    replaceBase.add(new Replace(coeffa, coeffb, forChange.get(i), baseMinDis, propMinDis, modifyU, i - j, probability, randmindis, randUsed, tmpgroup, currentfile));
+                    replaceBase.add(new Replace(coeffa, coeffb, forChange.get(i).str, baseMinDis, propMinDis, modifyU, forChange.get(i).strnum, probability, randmindis, randUsed, tmpgroup, curfilename));
                     if (replaceBase.get(replaceBase.size() - 1).errors != -1) {
-                        Throwable ex = new Exception("Ошибка ввода в строке " + (i - j + 1));
+                        Throwable ex = new Exception("Ошибка ввода в строке " + replaceBase.get(replaceBase.size() - 1).errors + " файла " + curfilename);
                         throw ex;
                     }
                 }
@@ -95,7 +124,7 @@ public class InputFile {
                 // добавление всeх в ckild из группы
 
                 if ((replaceBase.get(i).childsInt.contains(0))) {
-                    int g = masgroup[replaceBase.get(i).group - masgroup[replaceBase.get(i).group - 1]];
+                    int g = masgroup[replaceBase.get(i).group] - masgroup[replaceBase.get(i).group - 1];
                     for (int z = 0; z < g; z++) {
                         if (z + masgroup[replaceBase.get(i).group - 1] != i)
                             replaceBase.get(i).childsRep.add(replaceBase.get(z + masgroup[replaceBase.get(i).group - 1]));
@@ -107,7 +136,7 @@ public class InputFile {
                                 replaceBase.get(i).childsRep.add(replaceBase.get(replaceBase.get(i).childsInt.get(k) - 1 + masgroup[replaceBase.get(i).group - 1]));
                             }
                         } catch (Exception exe) {
-                            Throwable ee = new Exception("Ошибка ввода в строке " + (i + 1));
+                            Throwable ee = new Exception("Ошибка ввода в записи " + replaceBase.get(i).replacement + replaceBase.get(i).substitute.get(0) );
                             throw ee;
                         }
 
@@ -126,20 +155,19 @@ public class InputFile {
             BufferedReader br = new BufferedReader(new InputStreamReader(inpStream, StandardCharsets.UTF_8));
             String strLine;
             StringBuilder buildStr = new StringBuilder();
-            ChangeStr tmp = new ChangeStr();
             while ((strLine = br.readLine()) != null) {
                 buildStr.replace(0, buildStr.length(), "");
-                buildStr.append(tmp.modSpecial(strLine + " "));
-                buildStr.replace(0, buildStr.toString().length(), tmp.modE(buildStr.toString(), modifyE));
+                buildStr.append(ChangeStr.modSpecial(strLine + " "));
+                buildStr.replace(0, buildStr.toString().length(), ChangeStr.modE(buildStr.toString(), modifyE));
                 if (modifyU != 0)
-                    buildStr.replace(0, buildStr.toString().length(), tmp.modU(buildStr.toString(), modifyU));
+                    buildStr.replace(0, buildStr.toString().length(), ChangeStr.modU(buildStr.toString(), modifyU));
                 if (modifyZi != 0)
-                    buildStr.replace(0, buildStr.toString().length(), tmp.modZi(buildStr.toString()));
+                    buildStr.replace(0, buildStr.toString().length(), ChangeStr.modZi(buildStr.toString()));
 
                 preparedText.add(buildStr.toString());
             }
         } catch (IOException e) {
-            Throwable ex = new Exception("Ошибка в считывании файла");
+            Throwable ex = new Exception("Ошибка в считывании файла текста.");
             throw ex;
         }
         return preparedText;

@@ -1,7 +1,7 @@
 package mypack;
 
 public class ChangeStr {
-    public String modSpecial(String str) {
+    public static String modSpecial(String str) {
         StringBuilder tmpStr = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) == '&') {
@@ -40,7 +40,7 @@ public class ChangeStr {
         return tmpStr.toString();
     }
 
-    public String modE(String str, short modifyE) {
+    public static String modE(String str, short modifyE) {
         StringBuilder tmpStr = new StringBuilder();
         if (modifyE == 0) {
             return str;
@@ -60,7 +60,7 @@ public class ChangeStr {
                 }
             }
         }
-        if (modifyE == 2) {
+        else if (modifyE == 2) {
             tmpStr.append(str.charAt(0));
             for (int i = 1; i < str.length(); i++) {
                 if (str.charAt(i) == 'э') {
@@ -78,7 +78,7 @@ public class ChangeStr {
         return tmpStr.toString();
     }
 
-    public String modU(String str, short modifyU) {
+    public static String modU(String str, short modifyU) {
         StringBuilder tmpStr = new StringBuilder();
         if (modifyU == 1) {
             for (int i = 0; i < str.length(); i++) {
@@ -170,12 +170,12 @@ public class ChangeStr {
         return tmpStr.toString();
     }
 
-    private boolean isGlas(char x) {
-        return x == 'а' || x == 'у' || x == 'е' || x == 'ы' || x == 'о' || x == 'э' || x == 'я' || x == 'и' || x == 'ю' || x == 'ё' || x == 'й' || x == '́' ||
-                x == 'А' || x == 'У' || x == 'Е' || x == 'Ы' || x == 'О' || x == 'Э' || x == 'Я' || x == 'И' || x == 'Ю' || x == 'Ё' || x == 'Й';
+    private static boolean isGlas(char x) {
+        return x == 'а' || x == 'у' || x == 'е' || x == 'ы' || x == 'о' || x == 'э' || x == 'я' || x == 'и' || x == 'ю' || x == 'ё' || x == '́' ||
+                x == 'А' || x == 'У' || x == 'Е' || x == 'Ы' || x == 'О' || x == 'Э' || x == 'Я' || x == 'И' || x == 'Ю' || x == 'Ё';
     }
 
-    public String modZi(String str) {
+    public static String modZi(String str) {
         StringBuilder tmpStr = new StringBuilder();
         tmpStr.append(str.charAt(0));
         for (int i = 1; i < str.length(); i++) {
@@ -193,7 +193,7 @@ public class ChangeStr {
         return tmpStr.toString();
     }
 
-    public String getFinStr(String str, short modU) {
+    public static String getFinStr(String str, short modU) {
         StringBuilder tmpStr = new StringBuilder();
         for (int i = 0; i < str.length() - 1; i++) {
             if ((str.charAt(i) == '$') && (str.charAt(i + 1) == '$')) {

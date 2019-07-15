@@ -15,7 +15,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 public class MainWindow extends JFrame {
-    InputFile data;
+    InputFiles data;
     Replace[] replaceBase;
     ArrayList<String> text;
     String usedSaveText = null;
@@ -35,11 +35,11 @@ public class MainWindow extends JFrame {
     private JLabel probMinDisLabel = new JLabel("Введите допустимую мин. дистанцию");
     private JLabel modifyELabel = new JLabel("Режим обработки е");
     private JLabel modifyULabel = new JLabel("Режим обработки ё,ю,я");
-    private JLabel modifyZiLabel = new JLabel("Режим обработки слога ци");
+    private JLabel modifyZiLabel = new JLabel("Режим обработки слогов цы/ци");
     private JLabel probabilityLabel = new JLabel("Вероятность отказа от замены");
     private JLabel variantLabel = new JLabel("Добавление маркеров вариантов");
     private JLabel randUsedLabel = new JLabel("Рандомизация использованности");
-    private JLabel randMinDisLabel = new JLabel("Рандомизация мин.дис");
+    private JLabel randMinDisLabel = new JLabel("Рандомизация мин. дист.");
     private JTextField randMinDisInput = new JTextField("0.0", 5);
     private JTextField randUsedInput = new JTextField("0.0", 5);
 
@@ -49,7 +49,7 @@ public class MainWindow extends JFrame {
     private JRadioButton e3radio = new JRadioButton("е интерпретируются с условиями");
     private JRadioButton u1radio = new JRadioButton("без особенностей");
     private JRadioButton u2radio = new JRadioButton("обработка ё,ю,я как йо,йу,йа");
-    private JRadioButton u3radio = new JRadioButton("обработка ё,ю,я как йо,йу,йа c условиями");
+    private JRadioButton u3radio = new JRadioButton("особая обработка ё,ю,я и ь");
     private JRadioButton zi1radio = new JRadioButton("без особенностей");
     private JRadioButton zi2radio = new JRadioButton("цы интерпретируются как ци");
     private JRadioButton variant1radio = new JRadioButton("без особенностей");
@@ -60,20 +60,19 @@ public class MainWindow extends JFrame {
     private JLabel pathPatternLabel = new JLabel("База замен:");
     private JLabel pathTextLabel = new JLabel("Текст:");
     private JLabel pathOptionLabel = new JLabel("Options:");
-    private JCheckBox modJCheck = new JCheckBox("Блокировать замены после ъ");
+    private JCheckBox modJCheck = new JCheckBox("Блокир. замены после ъ");
     private JTextField pathPatternInput = new JTextField("");
     private JTextField pathTextInput = new JTextField("");
     private JTextField pathOptionInput = new JTextField("");
-    private JTextArea statistics = new JTextArea(15, 50);
+    private JTextArea statistics = new JTextArea(14, 50);
     String patternpath = "";
     String textpath = "";
     String optionspath = "";
 
     public MainWindow() {
         super("Кандзизатор");
-        this.setBounds(100, 100, 950, 750);
+        this.setBounds(72, 0, 950, 700);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pathTextInput.setBackground(new Color(255, 255, 100));
         countUsedSortButton.setEnabled(false);
         coeffUsedSortButton.setEnabled(false);
         groupSortButton.setEnabled(false);
@@ -242,7 +241,7 @@ public class MainWindow extends JFrame {
         groupVar.add(variant2radio);
 
 
-        variant1radio.setSelected(true);
+        variant2radio.setSelected(true);
         openPatternButton.addActionListener((e) -> {
                     replaceBase = null;
                     JFileChooser fileopen = new JFileChooser(System.getProperty("user.dir"));
@@ -266,6 +265,7 @@ public class MainWindow extends JFrame {
                 File file = fileopen.getSelectedFile();
                 pathTextInput.setText(file.toPath().toString());
                 textpath = file.toPath().toString();
+                pathTextInput.setBackground(new Color(255, 255, 100));
 
                 if (!patternpath.equals(""))
                     saveTextButton.setEnabled(true);
@@ -347,30 +347,27 @@ public class MainWindow extends JFrame {
                                 JOptionPane.showMessageDialog(null, "Ошибка ввода значений в полях", "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                             }
                             if (errs != true) {
-                                if (!patternpath.equals("") && errs != true) {
+                                if (!patternpath.equals("")) {
                                     File file = new File(patternpath);
                                     if (file.isDirectory()) {
                                         File[] filesInDir = file.listFiles();
                                         for (File f : filesInDir) {
                                             if (f.getName().equals("options.txt")) {
                                                 optionspath = f.toPath().toString();
-                                                pathOptionInput.setText(f.toPath().toString());
+                                                pathOptionInput.setText(optionspath);
                                             }
                                         }
                                     }
-                                    if (!errs) {
-                                        try {
-                                            data = new InputFile(file.toPath().toString());
+                                    try {
+                                            data = new InputFiles(file.toPath().toString());
                                             replaceBase = data.getReplace(baseMinDis, probMinDis, Short.parseShort(groupU.getSelection().getActionCommand()), probability, randmindis, randused);
                                         } catch (Throwable ex) {
-                                            JOptionPane.showMessageDialog(null, ex.getMessage() + " файла " + file.getName(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
+                                            JOptionPane.showMessageDialog(null, ex.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                         }
-
-                                    }
                                 }
                                 if ((!errs) && (!optionspath.equals(""))) {
                                     try {
-                                        veropropuskov = InputFile.loadOptions(optionspath);
+                                        veropropuskov = InputFiles.loadOptions(optionspath);
                                     } catch (Throwable exe) {
                                         JOptionPane.showMessageDialog(null, exe.getMessage(), "MainWindow", JOptionPane.INFORMATION_MESSAGE);
                                     }
@@ -411,8 +408,8 @@ public class MainWindow extends JFrame {
                     int ret = fileopen.showDialog(null, "Открыть папку с базами замен");
                     if (ret == JFileChooser.APPROVE_OPTION) {
                         File folder = fileopen.getSelectedFile();
-                        pathPatternInput.setText(folder.toPath().toString());
                         patternpath = folder.toPath().toString();
+                        pathPatternInput.setText(patternpath);
                         if (folder.isDirectory()) {
                             File[] filesInDir = folder.listFiles();
                             for (File f : filesInDir) {
@@ -445,15 +442,11 @@ public class MainWindow extends JFrame {
         });
 
         coeffUsedSortButton.addActionListener((e) -> {
-                    GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
                     StringBuilder tmpStr = new StringBuilder();
-                    for (int i = 0; i < groupCount.size(); i++) {
-                        groups[i] = new GroupReplaces(replaceBase, groupCount, i + 1);
-                    }
+                    Arrays.sort(replaceBase, (o1, o2) -> compareCoef(o1, o2));
 
-                    for (int i = 0; i < groupCount.size(); i++) {
-                        Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCoef(o1, o2));
-                        tmpStr.append(groups[i].printC() + "\n");
+                    for (int i = 0; i < replaceBase.length; i++) {
+                        tmpStr.append(replaceBase[i].replacement +" " + replaceBase[i].substitute + " " + replaceBase[i].coeffOfUsed + "\n");
                     }
 
                     statistics.setText(tmpStr.toString());
@@ -461,15 +454,10 @@ public class MainWindow extends JFrame {
         );
 
         countUsedSortButton.addActionListener((e) -> {
-                    GroupReplaces[] groups = new GroupReplaces[groupCount.size()];
                     StringBuilder tmpStr = new StringBuilder();
-                    for (int i = 0; i < groupCount.size(); i++) {
-                        groups[i] = new GroupReplaces(replaceBase, groupCount, i + 1);
-                    }
-
-                    for (int i = 0; i < groupCount.size(); i++) {
-                        Arrays.sort(groups[i].replacesInGr, (o1, o2) -> compareCount(o1, o2));
-                        tmpStr.append(groups[i].print() + "\n");
+                    Arrays.sort(replaceBase, (o1, o2) -> compareCount(o1, o2));
+                    for (int i = 0; i < replaceBase.length; i++) {
+                        tmpStr.append(replaceBase[i].replacement +" " + replaceBase[i].substitute + " удачных замен " + replaceBase[i].countGood + " неудачных " + replaceBase[i].countBad + " фиктивных " + replaceBase[i].countFake + "\n");
                     }
 
                     statistics.setText(tmpStr.toString());
@@ -543,7 +531,7 @@ public class MainWindow extends JFrame {
     }
 
     public static int compareCoef(Replace o1, Replace o2) {
-        if (Math.abs(o2.coeffOfUsed - o1.coeffOfUsed) < 0.00001) {
+        if (o2.coeffOfUsed - o1.coeffOfUsed < 0) {
             return 0;
         } else {
             if (o1.coeffOfUsed < o2.coeffOfUsed) return -1;

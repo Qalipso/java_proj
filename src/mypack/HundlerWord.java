@@ -4,15 +4,16 @@ import java.util.*;
 
 
 public class HundlerWord {
-    private String word;
-    public Map<String, List<Integer>> indexes;
+
+    final private String word; // исходное подготовленное слово
+    public Map<String, List<Integer>> indexes; //
     public Map<Integer, List<Integer>> indexesToAdd;
 
-    private boolean[] blocksL;
-    private boolean[] blocksIm;
-    private String d;
-    private short modU;
-    private short modJ;
+    private boolean[] blocksL;  // блокировка использованных букв
+    private boolean[] blocksIm; // блокировка букв отказом от замены
+    private String d; // разделитель
+    private short modU; // опции замены ю ё я
+    private short modJ; // запрет на замену после ъ
 
     Replace[] replaces;
     private Map<Integer, Integer> groupCount;
@@ -33,7 +34,7 @@ public class HundlerWord {
         blocksL = new boolean[word.length()];
         Arrays.fill(blocksL, false);
         blocksIm = new boolean[word.length()];
-        Arrays.fill(blocksL, false);
+        Arrays.fill(blocksIm, false);
 
         for (Replace replace : replaces) {
             if (!groupCount.containsKey(replace.group)) groupCount.put(replace.group, 0);
@@ -41,8 +42,8 @@ public class HundlerWord {
 
         if (mark == 0) d = "i";
         else {
-            int number = (int) (Math.random() * 2);
-            if (number == 0) d = "/";
+            double number = Math.random();
+            if (number < 0.5) d = "/";
             else d = "\\";
         }
     }
@@ -87,7 +88,8 @@ public class HundlerWord {
 
                     //проверка: не заблокрованы ли буквы которые заменяем?
                     boolean lettersIsFree = true;
-                    for (int j = index; j < index + replaces[i].replacement.length(); j++) {
+                    int replength = replaces[i].replacement.length();
+                    for (int j = index; j < index + replength; j++) {
                         if (blocksL[j]) {
                             lettersIsFree = false;
                             break;
@@ -98,26 +100,28 @@ public class HundlerWord {
                     if (lettersIsFree) {
                         //вероятность отказа
                         boolean isNotBlocked;
-                        if (replaces[i].importance - 1.0 > 0.0001) {
+                        if (replaces[i].importance - 1.0 > 0/*.0001*/) {
                             double protectCh = replaces[i].importance - 1.0;
-                            isNotBlocked = (!experiment(replaces[i].chanceBlock) || (experiment(replaces[i].chanceBlock) && experiment(protectCh)));
+                            isNotBlocked = (!experiment(replaces[i].chanceBlock) || experiment(protectCh));
 
                         } else {
                             boolean blockLCh = false;
                             double protectCh = replaces[i].importance;
 
-                            for (int j = index; j < index + replaces[i].replacement.length(); j++) {
+                            for (int j = index; j < index + replength; j++) {
                                 if (blocksIm[j]) {
                                     blockLCh = true;
                                     break;
                                 }
                             }
 
-                            isNotBlocked = (!experiment(replaces[i].chanceBlock) && (!blockLCh || blockLCh && experiment(protectCh)));
+                            isNotBlocked = (!experiment(replaces[i].chanceBlock));//проверка обычной блокировки
                             if (!isNotBlocked) {
-                                for (int j = index; j < index + replaces[i].replacement.length(); j++) {
+                                for (int j = index; j < index + replength; j++) {
                                     blocksIm[j] = true;
                                 }
+                            } else {//проверяем, не помешают ли мнимые блокировки
+                                isNotBlocked = (!blockLCh || experiment(protectCh));
                             }
                         }
 
@@ -141,10 +145,9 @@ public class HundlerWord {
                         }
 
                         //блокируем буквы с index по index + replace.len'
-                        for (int j = index; j < index + replaces[i].replacement.length(); j++) {
+                        for (int j = index; j < index + replength; j++) {
                             blocksL[j] = true;
                         }
-
 
                         //увеличиваем счетчики
                         replaces[i].incCountGood(1);
@@ -154,17 +157,15 @@ public class HundlerWord {
                         groupCount.put(replaces[i].group, groupCount.get(replaces[i].group) + 1);
 
                         //проверяем список подчинённых записей
-                        if (replaces[i].childsRep.size() > 0) {
-                            for (int j = 0; j < replaces[i].childsRep.size(); j++) {
-                                replaces[i].childsRep.get(j).incCoeffOfUsed();
+                        int childsRepsize = replaces[i].childsRep.size();
+                        for (int j = 0; j < childsRepsize; j++) {
+                            replaces[i].childsRep.get(j).incCoeffOfUsed();
 
-                                replaces[i].childsRep.get(j).incCountGood(1);
-                                replaces[i].childsRep.get(j).incCountFake(1);
+                            replaces[i].childsRep.get(j).incCountGood(1);
+                            replaces[i].childsRep.get(j).incCountFake(1);
 
-                                replaces[i].childsRep.get(j).blockChild();
-                            }
+                            replaces[i].childsRep.get(j).blockChild();
                         }
-
 
                     } else {
                         replaces[i].incCountBad(1);
@@ -214,7 +215,7 @@ public class HundlerWord {
         }
         Collections.sort(allInds, (o1, o2) -> compareDec(o1, o2));
 
-        StringBuffer ww = new StringBuffer();
+        StringBuffer ww = new StringBuffer(); // создаёт слово с заменами
         int j = 0;
         while (j < word.length()) {
 
@@ -236,6 +237,7 @@ public class HundlerWord {
                         for (Replace replace : replaces) { // находим по id replace
                             if (replace.ID == key) {
                                 r = replace;
+                                break;//добавлено
                             }
                         }
 
@@ -246,30 +248,31 @@ public class HundlerWord {
                         }
 
                         Random rand = new Random(System.nanoTime());
-                        int ranNum = (int) (rand.nextDouble() * r.substitute.size());
+                        int ranNum = (int) (rand.nextDouble() * r.substitute.size());//проверить
+                        String vibrSubstitute = r.substitute.get(ranNum);
 
                         if (!d.equals("i")) {
-                            if (r.substitute.get(ranNum).charAt(0) == '/' || r.substitute.get(ranNum).charAt(0) == '\\')
-                                ww = ww.append(r.substitute.get(ranNum));
-                            else ww = ww.append(d + r.substitute.get(ranNum));
+                            if (vibrSubstitute.charAt(0) == '/' || vibrSubstitute.charAt(0) == '\\')
+                                ww = ww.append(vibrSubstitute);
+                            else ww = ww.append(d + vibrSubstitute);
 
-                            int number = (int) (Math.random() * 2);
-                            if (number == 0) d = "/";
+                            double number = Math.random();
+                            if (number < 0.5) d = "/";
                             else d = "\\";
                         } else {
                             if (ww.length() != 0) {
                                 char x = ww.toString().charAt(ww.length() - 1);
                                 if (x == '$' || x == '&') {
                                     if (ww.length() > 1) x = ww.toString().charAt(ww.length() - 2);
-                                    else x = 'а';
+                                    else x = 'а'; // для myIsLetter(x);
                                 }
 
                                 if (myIsLetter(x) && x != 'i')
-                                    ww = ww.append(r.substitute.get(ranNum));
-                                else ww = ww.append(d + r.substitute.get(ranNum));
+                                    ww = ww.append(vibrSubstitute);
+                                else ww = ww.append(d + vibrSubstitute);
 
                             } else {
-                                ww = ww.append(r.substitute.get(ranNum));
+                                ww = ww.append(vibrSubstitute);
                             }
                         }
                     }
@@ -288,19 +291,25 @@ public class HundlerWord {
     }
 
     public static int compare(Replace o1, Replace o2) {
-        if (Math.abs(o1.coeffOfUsedRan - o2.coeffOfUsedRan) < 0.0001) {
-            if (o1.priority == o2.priority) {
-                if (o1.replacement.length() == o2.replacement.length()) return 0;
-                else
-                    return o2.replacement.replaceAll("[$&]", "").length() - o1.replacement.replaceAll("[$&]", "").length();
-            } else return o2.priority - o1.priority;
-        }
-        if (o1.coeffOfUsedRan - o2.coeffOfUsedRan > 0.0001) return 1;
-        else return -1;
+        return Double.compare(o1.coeffOfUsedRan, o2.coeffOfUsedRan);
+
+        //if (o1.coeffOfUsedRan - o2.coeffOfUsedRan == 0) return 0;
+        //else if (o1.coeffOfUsedRan - o2.coeffOfUsedRan > 0) return 1;
+        //else return -1;
+
+        //if (Math.abs(o1.coeffOfUsedRan - o2.coeffOfUsedRan) == 0/*< 0.0001*/) {
+        //    if (o1.priority == o2.priority) {
+        //        if (o1.replacement.length() == o2.replacement.length()) return 0;
+        //        else
+        //            return o2.replacement.replaceAll("[$&]", "").length() - o1.replacement.replaceAll("[$&]", "").length();
+        //    } else return o2.priority - o1.priority;
+        //}
+        //if (o1.coeffOfUsedRan - o2.coeffOfUsedRan > 0/*.0001*/) return 1;
+        //else return -1;
     }
 
     public static boolean myIsLetter(char x) {
-        return ((((int) x >= 'а') && ((int) x <= 'я')) || (((int) x >= 'А') && ((int) x <= 'Я')) || x == '\'');
+        return ((((int) x >= 'а') && ((int) x <= 'я')) || (((int) x >= 'А') && ((int) x <= 'Я')) || x == '\'' || x == 'ё' || x == 'Ё');
     }
 
     public static boolean experiment(double chance) {
@@ -308,8 +317,7 @@ public class HundlerWord {
         rand.setSeed(System.nanoTime());
         double comp = rand.nextDouble();
 
-        return (chance - comp > 0.0001);
-
+        return (chance - comp >= 0/*.0001*/);
     }
 
     public static boolean isShip(char x) {
@@ -317,6 +325,6 @@ public class HundlerWord {
     }
 
     public static boolean isBadChar(char x) {
-        return (x == '-' || x == 'ъ' || x == 'ь' || isShip(x));
+        return (x == '-' || x == 'ъ' || x == 'й' || x == '\'' || isShip(x));
     }
 }

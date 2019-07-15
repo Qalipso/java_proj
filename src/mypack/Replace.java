@@ -46,13 +46,13 @@ public class Replace {
         ID = saveID;
         childsRep = new ArrayList<>();
         substitute = new ArrayList<>();
-        ChangeStr tmp = new ChangeStr();
+        //ChangeStr tmp = new ChangeStr();
         StringBuilder buildStr = new StringBuilder();
         buildStr.append(str);
         errors = -1;
         ArrayList<String> substr = new ArrayList<>();
         try {
-            if (buildStr.codePoints().filter(ch -> ch == '\t').count() < 2)
+            if (buildStr.codePoints().filter(ch -> ch == '\t').count() < 1)
                 errors = k;
             else {
 
@@ -64,22 +64,25 @@ public class Replace {
                 while (substr.size() <= 7) {
                     substr.add("");
                 }
-                if (substr.get(0).equals("") || substr.get(1).equals("") || substr.get(2).equals("") || substr.get(0).indexOf(' ') != -1 || substr.get(1).indexOf(' ') != -1)
+                while (substr.get(0).equals("")) {
+                    substr.remove(0);
+                }
+                if (substr.get(0).equals("") || substr.get(1).equals("") || substr.get(0).indexOf(' ') != -1 || substr.get(1).indexOf(' ') != -1)
                     errors = k;
                 if (modifyU != 0)
-                    replacement = tmp.modU(substr.get(0), modifyU);
+                    replacement = ChangeStr.modU(substr.get(0), modifyU);
                 else
                     replacement = substr.get(0);
                 substitute.add(substr.get(1));
-                if (!substr.get(2).equals("")) {
-                    priority = (int) Math.round(Integer.parseInt(substr.get(2)) * priorityCoeff);
-                    coeffOfUsed = 1 / (2 * (double) priority);
+                if (!substr.get(2).equals("")) priority = (int) Math.round(Integer.parseInt(substr.get(2)) * priorityCoeff);
+                else priority = (int) Math.round(1000 * priorityCoeff);
+                coeffOfUsed = 1 / (2 * (double) priority);
 
-                    Random rand = new Random();
-                    rand.setSeed(System.nanoTime());
-                    double ranNumber = (rand.nextDouble() * coeffOfRan * 2) - coeffOfRan;
-                    coeffOfUsedRan = coeffOfUsed + (1 / (double) priority) * ranNumber;
-                }
+                Random rand = new Random();
+                rand.setSeed(System.nanoTime());
+                double ranNumber = (rand.nextDouble() * coeffOfRan * 2) - coeffOfRan;
+                coeffOfUsedRan = coeffOfUsed + (1 / (double) priority) * ranNumber;
+
                 if (!substr.get(3).equals("")) {
                     minDis = Math.max((int) Math.round(Integer.parseInt(substr.get(3)) * minDisCoeff), propMinDis);
                     minDis = Math.max(minDis, (int) Math.round(baseMinDis * minDisCoeff));
